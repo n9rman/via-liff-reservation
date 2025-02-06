@@ -13,11 +13,24 @@
     <label>@預約時間：</label><input type="datetime-local" id="datetime"><br><br>
     <button onclick="submitReservation()">提交</button>
 
+    <p id="statusMessage"></p> <!-- 顯示提交結果訊息 -->
+
 <script>
-    async function submitReservation() {
+    // 初始化 LIFF
+    async function initLiff() {
         try {
             await liff.init({ liffId: "2006867121-OlgLV60n" });
+            console.log("LIFF 初始化成功");
+        } catch (error) {
+            console.error("LIFF 初始化失敗：", error);
+            alert("LIFF 初始化失敗，請檢查 LIFF ID 或網路設定。");
+        }
+    }
 
+    // 提交預約資料
+    async function submitReservation() {
+        try {
+            // 檢查使用者是否登入
             if (!liff.isLoggedIn()) {
                 liff.login();
                 return;
@@ -28,31 +41,36 @@
             const datetime = document.getElementById("datetime").value;
 
             if (!name || !phone || !datetime) {
-                alert("請填寫所有欄位！");
+                showStatusMessage("請填寫所有欄位！");
                 return;
             }
 
-            const message = `📌 預約成功！\n\n姓名：${name}\n電話：${phone}\n時間：${datetime.replace("T", " ")}`;
+            // 格式化日期時間
+            const formattedDatetime = datetime.replace("T", " ");
 
+            const message = `📌 預約成功！\n\n姓名：${name}\n電話：${phone}\n時間：${formattedDatetime}`;
+
+            // 發送消息到 LINE
             await liff.sendMessages([{ type: "text", text: message }]);
 
-            alert("已回傳至 LINE！");
+            showStatusMessage("已回傳至 LINE！");
+
+            // 關閉 LIFF 窗口
             liff.closeWindow();
         } catch (error) {
             console.error("錯誤：", error);
-            alert("提交失敗，請檢查 LIFF 設定");
+            showStatusMessage("提交失敗，請稍後再試。");
         }
     }
 
-    // 測試 LIFF 是否成功初始化
-    window.onload = async function () {
-        try {
-            await liff.init({ liffId: "2006867121-OlgLV60n" });
-            console.log("LIFF 初始化成功");
-        } catch (error) {
-            console.error("LIFF 初始化失敗：", error);
-        }
-    };
+    // 顯示狀態訊息
+    function showStatusMessage(message) {
+        const statusMessage = document.getElementById("statusMessage");
+        statusMessage.textContent = message;
+    }
+
+    // 頁面加載時初始化 LIFF
+    window.onload = initLiff;
 </script>
 </body>
 </html>
