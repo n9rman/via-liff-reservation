@@ -9,29 +9,23 @@
 <body>
     <h2>預約表單</h2>
 
-<style>
-    img {
-        width: 100%;  /* 預設情況下圖片寬度100% */
-        height: auto;
-    }
-
-    /* 當螢幕寬度大於600px時，將圖片設置為固定大小 */
-    @media (min-width: 600px) {
-        img {
-            width: 500px;
-        }
-    }
-</style>
-
-<img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約表單圖片">
-
-
 
     <label>姓名：</label><input type="text" id="name"><br><br>
     <label>電話：</label><input type="text" id="phone"><br><br>
     <label>預約時間：</label><input type="datetime-local" id="datetime"><br><br>
     <button onclick="submitReservation()">提交</button>
 
+<style>
+    img {
+        max-width: 100%;  /* 限制圖片最大寬度為100% */
+        height: auto;  /* 自動調整高度，保持比例 */
+    }
+</style>
+
+<img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約表單圖片">
+
+
+    
     <script>
         async function submitReservation() {
             await liff.init({ liffId: "2006867121-OlgLV60n" });
