@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>預約表單</title>
+    <title>@預約表單</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
     <h2>預約表單</h2>
-    <label>姓名：</label><input type="text" id="name"><br><br>
-    <label>電話：</label><input type="text" id="phone"><br><br>
-    <label>預約時間：</label><input type="datetime-local" id="datetime"><br><br>
+    <label>@姓名：</label><input type="text" id="name"><br><br>
+    <label>@電話：</label><input type="text" id="phone"><br><br>
+    <label>@預約時間：</label><input type="datetime-local" id="datetime"><br><br>
     <button onclick="submitReservation()">提交</button>
 
-    <script>
-        async function submitReservation() {
-            await liff.init({ liffId: "U816b3ca8abfa5de6acde6f95e34dd0cd" });
+<script>
+    async function submitReservation() {
+        try {
+            await liff.init({ liffId: "你的 LIFF ID" });
+
             if (!liff.isLoggedIn()) {
                 liff.login();
+                return;
             }
 
             const name = document.getElementById("name").value;
@@ -31,13 +34,25 @@
 
             const message = `📌 預約成功！\n\n姓名：${name}\n電話：${phone}\n時間：${datetime.replace("T", " ")}`;
 
-            liff.sendMessages([{ type: "text", text: message }])
-                .then(() => {
-                    alert("已回傳至 LINE！");
-                    liff.closeWindow();
-                })
-                .catch((err) => console.error("發送訊息錯誤", err));
+            await liff.sendMessages([{ type: "text", text: message }]);
+
+            alert("已回傳至 LINE！");
+            liff.closeWindow();
+        } catch (error) {
+            console.error("錯誤：", error);
+            alert("提交失敗，請檢查 LIFF 設定");
         }
-    </script>
+    }
+
+    // 測試 LIFF 是否成功初始化
+    window.onload = async function () {
+        try {
+            await liff.init({ liffId: "你的 LIFF ID" });
+            console.log("LIFF 初始化成功");
+        } catch (error) {
+            console.error("LIFF 初始化失敗：", error);
+        }
+    };
+</script>
 </body>
 </html>
