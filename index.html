@@ -41,7 +41,7 @@
                 return;
             }
 
-            const message = `📌 預約成功！\n\n姓名：${name}\n電話：${phone}\n時間：${datetime.replace("T", " ")}`;
+            const message = `📌已登記預約 請等候回覆\n收到回覆才算登記成功\n\n姓名：${name}\n電話：${phone}\n時間：${datetime.replace("T", " ")}`;
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
