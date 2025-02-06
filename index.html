@@ -16,7 +16,7 @@
 <script>
     async function submitReservation() {
         try {
-            await liff.init({ liffId: "2006867121-xbwp6rKd" });
+            await liff.init({ liffId: "2006867121-OlgLV60n" });
 
             if (!liff.isLoggedIn()) {
                 liff.login();
@@ -47,7 +47,7 @@
     // 測試 LIFF 是否成功初始化
     window.onload = async function () {
         try {
-            await liff.init({ liffId: "2006867121-xbwp6rKd" });
+            await liff.init({ liffId: "2006867121-OlgLV60n" });
             console.log("LIFF 初始化成功");
         } catch (error) {
             console.error("LIFF 初始化失敗：", error);
