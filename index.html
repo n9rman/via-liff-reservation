@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預約表單</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+    <h2>預約表單</h2>
+    <label>姓名：</label><input type="text" id="name"><br><br>
+    <label>電話：</label><input type="text" id="phone"><br><br>
+    <label>預約時間：</label><input type="datetime-local" id="datetime"><br><br>
+    <button onclick="submitReservation()">提交</button>
+
+    <script>
+        async function submitReservation() {
+            await liff.init({ liffId: "你的 LIFF ID" });
+            if (!liff.isLoggedIn()) {
+                liff.login();
+            }
+
+            const name = document.getElementById("name").value;
+            const phone = document.getElementById("phone").value;
+            const datetime = document.getElementById("datetime").value;
+
+            if (!name || !phone || !datetime) {
+                alert("請填寫所有欄位！");
+                return;
+            }
+
+            const message = `📌 預約成功！\n\n姓名：${name}\n電話：${phone}\n時間：${datetime.replace("T", " ")}`;
+
+            liff.sendMessages([{ type: "text", text: message }])
+                .then(() => {
+                    alert("已回傳至 LINE！");
+                    liff.closeWindow();
+                })
+                .catch((err) => console.error("發送訊息錯誤", err));
+        }
+    </script>
+</body>
+</html>
