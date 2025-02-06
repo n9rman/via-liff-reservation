@@ -3,37 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@預約表單</title>
+    <title>預約表單</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
     <h2>預約表單</h2>
-    <label>@姓名：</label><input type="text" id="name"><br><br>
-    <label>@電話：</label><input type="text" id="phone"><br><br>
-    <label>@預約時間：</label><input type="datetime-local" id="datetime"><br><br>
+    <label>姓名：</label><input type="text" id="name"><br><br>
+    <label>電話：</label><input type="text" id="phone"><br><br>
+    <label>預約時間：</label><input type="datetime-local" id="datetime"><br><br>
     <button onclick="submitReservation()">提交</button>
 
-    <p id="statusMessage"></p> <!-- 顯示提交結果訊息 -->
-
-<script>
-    // 初始化 LIFF
-    async function initLiff() {
-        try {
+    <script>
+        async function submitReservation() {
             await liff.init({ liffId: "2006867121-OlgLV60n" });
-            console.log("LIFF 初始化成功");
-        } catch (error) {
-            console.error("LIFF 初始化失敗：", error);
-            alert("LIFF 初始化失敗，請檢查 LIFF ID 或網路設定。");
-        }
-    }
-
-    // 提交預約資料
-    async function submitReservation() {
-        try {
-            // 檢查使用者是否登入
             if (!liff.isLoggedIn()) {
                 liff.login();
-                return;
             }
 
             const name = document.getElementById("name").value;
@@ -41,36 +25,19 @@
             const datetime = document.getElementById("datetime").value;
 
             if (!name || !phone || !datetime) {
-                showStatusMessage("請填寫所有欄位！");
+                alert("請填寫所有欄位！");
                 return;
             }
 
-            // 格式化日期時間
-            const formattedDatetime = datetime.replace("T", " ");
+            const message = `📌 預約成功！\n\n姓名：${name}\n電話：${phone}\n時間：${datetime.replace("T", " ")}`;
 
-            const message = `📌 預約成功！\n\n姓名：${name}\n電話：${phone}\n時間：${formattedDatetime}`;
-
-            // 發送消息到 LINE
-            await liff.sendMessages([{ type: "text", text: message }]);
-
-            showStatusMessage("已回傳至 LINE！");
-
-            // 關閉 LIFF 窗口
-            liff.closeWindow();
-        } catch (error) {
-            console.error("錯誤：", error);
-            showStatusMessage("提交失敗，請稍後再試。");
+            liff.sendMessages([{ type: "text", text: message }])
+                .then(() => {
+                    alert("已回傳至 LINE！");
+                    liff.closeWindow();
+                })
+                .catch((err) => console.error("發送訊息錯誤", err));
         }
-    }
-
-    // 顯示狀態訊息
-    function showStatusMessage(message) {
-        const statusMessage = document.getElementById("statusMessage");
-        statusMessage.textContent = message;
-    }
-
-    // 頁面加載時初始化 LIFF
-    window.onload = initLiff;
-</script>
+    </script>
 </body>
 </html>
