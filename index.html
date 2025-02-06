@@ -5,19 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>預約表單</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        img {
+            width: 100%; /* 圖片寬度設定為 100% */
+            height: auto; /* 高度自動調整以保持比例 */
+            display: block; /* 讓圖片顯示為區塊元素，並自動換行 */
+            margin-top: 20px; /* 給圖片加上一些間距，避免太過擁擠 */
+        }
+    </style>
 </head>
 <body>
-    <h2>預約表單</h2>
+    <h2>預約@表單</h2>
 
-
-    <label>姓名：</label><input type="text" id="name"><br><br>
-    <label>電話：</label><input type="text" id="phone"><br><br>
-    <label>預約時間：</label><input type="datetime-local" id="datetime"><br><br>
+    <label>@姓名：</label><input type="text" id="name"><br><br>
+    <label>@電話：</label><input type="text" id="phone"><br><br>
+    <label>@預約時間：</label><input type="datetime-local" id="datetime"><br><br>
     <button onclick="submitReservation()">提交</button>
 
-<img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約表單圖片" width="520" height="520">
+    <!-- 圖片會顯示在提交按鈕下方，且會調整為視窗大小 -->
+    <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約表單圖片">
 
-    
     <script>
         async function submitReservation() {
             await liff.init({ liffId: "2006867121-OlgLV60n" });
