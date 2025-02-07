@@ -22,7 +22,7 @@
             margin-top: 10px;
             font-weight: bold;
         }
-        input, textarea {
+        input, select, textarea {
             width: 100%;
             padding: 8px;
             font-size: 16px;
@@ -49,6 +49,14 @@
 <body>
     <h2>via 預約表單</h2>
 
+    <label>設計師：</label>
+    <select id="stylist">
+        <option value="" selected>請選擇設計師</option>
+        <option value="Michelle">Michelle</option>
+        <option value="Mia">Mia</option>
+        <option value="不指定設計師">不指定設計師</option>
+    </select>
+
     <label>您的姓名：</label>
     <input type="text" id="name">
 
@@ -73,18 +81,19 @@
                 liff.login();
             }
 
+            const stylist = document.getElementById("stylist").value;
             const name = document.getElementById("name").value;
             const phone = document.getElementById("phone").value;
             const service = document.getElementById("service").value;
             const datetime = document.getElementById("datetime").value;
             const remarks = document.getElementById("remarks").value;
 
-            if (!name || !phone || !service || !datetime) {
+            if (!stylist || !name || !phone || !service || !datetime) {
                 alert("請填寫所有欄位！");
                 return;
             }
 
-            const message = `📌 預約登記\n\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${datetime.replace("T", " ")}\n備註：${remarks}`;
+            const message = `📌 預約登記\n\n設計師：${stylist}\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${datetime.replace("T", " ")}\n備註：${remarks}`;
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
