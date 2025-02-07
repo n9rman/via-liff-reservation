@@ -98,7 +98,7 @@
     </div>
 
     <label>備註：</label>
-    <textarea id="remarks" rows="4"></textarea>
+    <textarea id="remarks" rows="3"></textarea>
 
     <button onclick="submitReservation()">提交</button>
 
@@ -111,47 +111,55 @@
         document.getElementById("datetime").value = "";
     });
 
-async function submitReservation() {
-    await liff.init({ liffId: "2006867121-OlgLV60n" });
-    if (!liff.isLoggedIn()) {
-        liff.login();
+    // 監聽設計師選擇框，防止鍵盤自動彈出
+    document.getElementById("stylist").addEventListener("change", function() {
+        // 延遲焦點設置，避免鍵盤快速彈出
+        setTimeout(function() {
+            document.getElementById("name").focus();
+        }, 300);  // 延遲 300 毫秒
+    });
+
+    async function submitReservation() {
+        await liff.init({ liffId: "2006867121-OlgLV60n" });
+        if (!liff.isLoggedIn()) {
+            liff.login();
+        }
+
+        const stylist = document.getElementById("stylist").value;
+        const name = document.getElementById("name").value;
+        const phone = document.getElementById("phone").value;
+        const service = document.getElementById("service").value;
+        const datetime = document.getElementById("datetime").value;
+        const remarks = document.getElementById("remarks").value;
+
+        if (!stylist || !name || !phone || !service || !datetime) {
+            alert("請填寫所有欄位！");
+            return;
+        }
+
+        console.log("原始日期時間：", datetime);  // 確認原始 datetime 的值
+
+        // 格式化 datetime，先替換 T 和 -，再保留 MM/DD 格式
+        const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
+        console.log("格式化後的日期時間：", formattedDateTime);  // 確認格式化後的日期時間
+
+        const dateTimeParts = formattedDateTime.split(" ");
+        const dateParts = dateTimeParts[0].split("/");  // [2025, 02, 07]
+        const date = `${dateParts[1]}/${dateParts[2]}`;  // 只取 02/07
+        const time = dateTimeParts[1];  // 時間部分
+
+        const finalDateTime = `${date} [${time}]`;  // 組合成 "MM/DD [HH:MM]"
+
+        console.log("最終格式化的日期時間：", finalDateTime);  // 輸出最終格式化結果
+
+        const message = `[這是您的預約表格]\n[待稍候會幫您確認]\n\n    設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n\n備註：\n${remarks}`;
+
+        liff.sendMessages([{ type: "text", text: message }])
+            .then(() => {
+                liff.closeWindow();
+            })
+            .catch((err) => console.error("發送訊息錯誤", err));
     }
-
-    const stylist = document.getElementById("stylist").value;
-    const name = document.getElementById("name").value;
-    const phone = document.getElementById("phone").value;
-    const service = document.getElementById("service").value;
-    const datetime = document.getElementById("datetime").value;
-    const remarks = document.getElementById("remarks").value;
-
-    if (!stylist || !name || !phone || !service || !datetime) {
-        alert("請填寫所有欄位！");
-        return;
-    }
-
-    console.log("原始日期時間：", datetime);  // 確認原始 datetime 的值
-
-    // 格式化 datetime，先替換 T 和 -，再保留 MM/DD 格式
-    const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
-    console.log("格式化後的日期時間：", formattedDateTime);  // 確認格式化後的日期時間
-
-    const dateTimeParts = formattedDateTime.split(" ");
-    const dateParts = dateTimeParts[0].split("/");  // [2025, 02, 07]
-    const date = `${dateParts[1]}/${dateParts[2]}`;  // 只取 02/07
-    const time = dateTimeParts[1];  // 時間部分
-
-    const finalDateTime = `${date} [${time}]`;  // 組合成 "MM/DD [HH:MM]"
-
-    console.log("最終格式化的日期時間：", finalDateTime);  // 輸出最終格式化結果
-
-    const message = `[這是您的預約表格]\n[待稍候專幫您確認]\n\n    設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：\n${remarks}`;
-
-    liff.sendMessages([{ type: "text", text: message }])
-        .then(() => {
-            liff.closeWindow();
-        })
-        .catch((err) => console.error("發送訊息錯誤", err));
-}
 </script>
 
 </body>
