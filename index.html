@@ -62,6 +62,12 @@
         button:hover {
             background-color: #0056b3;
         }
+
+        /* 圖片顯示樣式 */
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -94,6 +100,11 @@
 
     <button onclick="submitReservation()">提交</button>
 
+    <!-- 圖片顯示區域 -->
+    <div class="image-container">
+        <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
+    </div>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             // 預設讓 datetime-local 顯示「請選擇日期時間」
@@ -118,10 +129,9 @@
                 return;
             }
 
-            
-            // 格式化日期時間為 2025/02/07 [14:30]
+            // 格式化日期時間為 02/07 [14:30]
             const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
-            const finalDateTime = formattedDateTime.replace(/(\d{4}\/\d{2}\/\d{2}) (\d{2}:\d{2})/, "$1 [$2]");
+            const finalDateTime = formattedDateTime.replace(/(\d{2}\/\d{2}\/\d{2}) (\d{2}:\d{2})/, "$1 [$2]");
 
             const message = `📌 預約登記\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：${remarks}`;
 
