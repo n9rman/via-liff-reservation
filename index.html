@@ -21,7 +21,7 @@
     <label>您 的 電 話：</label><input type="text" id="phone"><br><br>
     <label>服 務 項 目：</label><input type="text" id="service"><br><br>    
     <label>預 約 時 間：</label><input type="datetime-local" id="datetime"><br><br>
-    <label>備       註：</label><textarea id="remarks" rows="4" cols="30"></textarea><br><br>
+    <label>備       註：</label><textarea id="remarks" rows="4" cols="20"></textarea><br><br>
     <button onclick="submitReservation()">提交</button>
 
     <!-- 圖片會顯示在提交按鈕下方，且會調整為視窗大小 -->
@@ -44,11 +44,13 @@
                 return;
             }
 
-            const message = `📌 已登記 等待回覆\n\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${datetime.replace("T", " ")}\n備註：${remarks}`;
+            const message = `📌 請稍後 等待回覆\n\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${datetime.replace("T", " ")}\n備註：${remarks}`;
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
-                    alert("已回傳至 LINE！");
+                    
+                    /*alert("您的訊息已回傳至 LINE！"); */
+                    
                     liff.closeWindow();
                 })
                 .catch((err) => console.error("發送訊息錯誤", err));
