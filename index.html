@@ -131,14 +131,14 @@
             return;
         }
 
-        // 重新格式化日期時間，為了符合 XX/XX [XX:XX] 格式
-        const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/"); // 格式化日期
+        const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
+        const finalDateTime = formattedDateTime.replace(/(\d{2}\/\d{2}\/\d{2}) (\d{2}:\d{2})/, "$1 [$2]");
+
         const dateTimeParts = formattedDateTime.split(" ");
         const date = dateTimeParts[0]; // 例如 "2025/02/07"
         const time = dateTimeParts[1]; // 例如 "14:30"
 
-        // 更改日期格式為 XX/XX 且時間保留在中括號內
-        const finalDateTime = date.replace(/(\d{4})\/(\d{2})\/(\d{2})/, "$2/$3") + " [" + time + "]";
+
 
         const message = `📌 預約登記\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：${remarks}`;
 
