@@ -73,13 +73,13 @@
     </style>
 </head>
 <body>
-    <h2>via 預約表單</h2>
+    <h2>via 預 約 表 單</h2>
 
     <div class="image-container">
         <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
     </div>
     
-    <label>設計師：</label>
+    <label>設 計 師：</label>
     <select id="stylist">
         <option value="" selected>請選擇設計師</option>
         <option value="Michelle">Michelle</option>
@@ -87,21 +87,21 @@
         <option value="不指定設計師">不指定設計師</option>
     </select>
 
-    <label>您的姓名：</label>
+    <label>您 的 姓 名：</label>
     <input type="text" id="name">
 
-    <label>您的電話：</label>
+    <label>您 的 電 話：</label>
     <input type="text" id="phone">
 
-    <label>服務項目：</label>
+    <label>服 務 項 目：</label>
     <input type="text" id="service">  
 
-    <label>預約時間：</label>
+    <label>預 約 時 間：</label>
     <div class="datetime-wrapper">
         <input type="datetime-local" id="datetime">
     </div>
 
-    <label>備註：</label>
+    <label>備 註：</label>
     <textarea id="remarks" rows="3"></textarea>
 
     <button onclick="submitReservation()">提交</button>
@@ -133,7 +133,7 @@
         const remarks = document.getElementById("remarks").value;
 
         if (!stylist || !name || !phone || !service || !datetime) {
-            alert("請填寫所有欄位！");
+            alert("有欄位未填寫");
             return;
         }
 
