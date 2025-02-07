@@ -73,4 +73,47 @@
     <input type="text" id="name">
 
     <label for="phone">您 的 電 話：</label>
-    <input type="text" id="phone"
+    <input type="text" id="phone">
+
+    <label for="service">服 務 項 目：</label>
+    <input type="text" id="service">
+
+    <label for="datetime">預 約 時 間：</label><br>
+    <input type="datetime-local" id="datetime"><br><br> <!-- 此處換行 -->
+
+    <label for="remarks">備 註：</label>
+    <textarea id="remarks" rows="4"></textarea>
+
+    <button onclick="submitReservation()">提交</button>
+
+    <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約表單圖片">
+
+    <script>
+        async function submitReservation() {
+            await liff.init({ liffId: "2006867121-OlgLV60n" });
+            if (!liff.isLoggedIn()) {
+                liff.login();
+            }
+
+            const name = document.getElementById("name").value;
+            const phone = document.getElementById("phone").value;
+            const service = document.getElementById("service").value; 
+            const datetime = document.getElementById("datetime").value;
+            const remarks = document.getElementById("remarks").value; 
+
+            if (!name || !phone || !service || !datetime) {
+                alert("請填寫所有欄位！");
+                return;
+            }
+
+            const message = `請稍後 等待回覆\n\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${datetime.replace("T", " ")}\n備註：${remarks}`;
+
+            liff.sendMessages([{ type: "text", text: message }])
+                .then(() => {
+                    liff.closeWindow();
+                })
+                .catch((err) => console.error("發送訊息錯誤", err));
+        }
+    </script>
+</body>
+</html>
