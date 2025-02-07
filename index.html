@@ -150,7 +150,7 @@
 
         console.log("最終格式化的日期時間：", finalDateTime);  // 輸出最終格式化結果
 
-        const message = `[這是您的預約表格]\n[待稍候會幫您確認]\n\n    設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n\n備註：\n${remarks}`;
+        const message = `[這是您的預約表格]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
