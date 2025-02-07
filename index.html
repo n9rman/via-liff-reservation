@@ -31,16 +31,19 @@
             color: #555;
         }
 
+        /* 設定輸入框和文字區域大小，並防止自動放大 */
         input[type="text"], input[type="datetime-local"], textarea {
             width: 100%;
             padding: 10px;
             margin: 8px 0;
             border-radius: 5px;
             border: 1px solid #ddd;
-            font-size: 16px; /* 設定字體大小 */
+            font-size: 16px; /* 保持字體大小一致 */
             -webkit-text-size-adjust: 100%; /* 防止自動放大 */
+            box-sizing: border-box; /* 確保padding不影響整體寬度 */
         }
 
+        /* 提交按鈕 */
         button {
             width: 100%;
             padding: 12px;
@@ -111,9 +114,4 @@
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
                     liff.closeWindow();
-                })
-                .catch((err) => console.error("發送訊息錯誤", err));
-        }
-    </script>
-</body>
-</html>
+          
