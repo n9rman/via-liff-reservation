@@ -111,12 +111,10 @@
         document.getElementById("datetime").value = "";
     });
 
-    // 監聽設計師選擇框，防止鍵盤自動彈出
-    document.getElementById("stylist").addEventListener("change", function() {
-        // 防止選擇設計師時焦點自動跳轉
-        setTimeout(function() {
-            document.getElementById("name").focus();  // 手動將焦點移到下一個輸入框
-        }, 0);  // 即刻執行，避免焦點跳轉
+    // 防止焦點自動跳轉，並強制設置焦點
+    document.getElementById("stylist").addEventListener("focus", function() {
+        this.blur();  // 移除 select 的焦點，避免觸發鍵盤
+        document.getElementById("name").focus();  // 直接設置焦點到下個輸入框
     });
 
     async function submitReservation() {
