@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-    <h2>預約表單</h2>
+    <h2>via 預約表單</h2>
 
     <label>您 的 姓 名：</label><input type="text" id="name"><br><br>
     <label>您 的 電 話：</label><input type="text" id="phone"><br><br>
@@ -48,8 +48,6 @@
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
-                    
-                    /*alert("您的訊息已回傳至 LINE！"); */
                     
                     liff.closeWindow();
                 })
