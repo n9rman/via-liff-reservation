@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>預約表單</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    
-    <style>
-        /* 引入字體 */
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap');
 
+    <!-- 引入 Google 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
+
+    <style>
         body {
             font-family: 'Noto Serif TC', serif !important;
             max-width: 400px;
@@ -144,7 +144,7 @@ async function submitReservation() {
 
     console.log("最終格式化的日期時間：", finalDateTime);  // 輸出最終格式化結果
 
-    const message = `📌 預約登記\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：${remarks}`;
+    const message = `📌 預約登記\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：\n${remarks}`;
 
     liff.sendMessages([{ type: "text", text: message }])
         .then(() => {
