@@ -30,8 +30,12 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
+        /* 禁用原生樣式，確保一致性 */
         input[type="datetime-local"] {
-            width: 100%; /* 確保 datetime-local 輸入框寬度一致 */
+            -webkit-appearance: none; /* 禁用 iOS 的原生樣式 */
+            -moz-appearance: none;    /* 禁用 Firefox 的原生樣式 */
+            appearance: none;         /* 禁用其他瀏覽器的原生樣式 */
+            width: 100%;              /* 確保輸入框寬度一致 */
             padding: 8px;
         }
         input::placeholder {
