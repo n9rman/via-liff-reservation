@@ -23,12 +23,16 @@
             font-weight: bold;
         }
         input, select, textarea {
-            width: 100%;
+            width: 100%;  /* 保證所有輸入框的寬度一致 */
             padding: 8px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
+        }
+        input[type="datetime-local"] {
+            width: 100%; /* 確保 datetime-local 輸入框寬度一致 */
+            padding: 8px;
         }
         input::placeholder {
             color: #aaa;
@@ -105,7 +109,7 @@
             const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
             const finalDateTime = formattedDateTime.replace(/(\d{4}\/\d{2}\/\d{2}) (\d{2}:\d{2})/, "$1 [$2]");
 
-            const message = `📌 預約登記\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：${remarks}`;
+            const message = `📌 預約登記\n\n設計師：${stylist}\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：${remarks}`;
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
