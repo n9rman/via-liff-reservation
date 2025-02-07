@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>via hair salon</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+    <!-- 引入 Google 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Serif TC', serif !important;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            display: block;
+        }
+
+        .datetime-wrapper {
+            width: 100%;
+            display: block;
+        }
+
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            color: white;
+            background-color: #333 !important;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #555 !important;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>via 預 約 表 單</h2>
+
+    <div class="image-container">
+        <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
+    </div>
+    
+    <label>設 計 師</label>
+    <select id="stylist">
+        <option value="" selected>請選擇設計師</option>
+        <option value="Michelle">Michelle</option>
+        <option value="Mia">Mia</option>
+        <option value="不指定設計師">不指定設計師</option>
+    </select>
+
+    <label>您 的 姓 名</label>
+    <input type="text" id="name">
+
+    <label>您 的 電 話</label>
+    <input type="text" id="phone">
+
+    <label>服 務 項 目</label>
+    <input type="text" id="service">  
+
+    <label>預 約 時 間  (三 十 分 鐘 為 一 個 單 位)</label>
+    <div class="datetime-wrapper">
+        <input type="datetime-local" id="datetime">
+    </div>
+
+    <label>備 註</label>
+    <textarea id="remarks" rows="3"></textarea>
+
+    <button onclick="submitReservation()">提交</button>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("datetime").value = "";
+    });
+
+    // 防止在選擇設計師時觸發鍵盤
+    document.getElementById("stylist").addEventListener("mousedown", function(event) {
+        event.preventDefault(); // 阻止選擇時的焦點變動
+        this.focus();  // 保持 select 元素的焦點
+    });
+
+    async function submitReservation() {
+        await liff.init({ liffId: "2006867121-OlgLV60n" });
+        if (!liff.isLoggedIn()) {
+            liff.login();
+        }
+
+        const stylist = document.getElementById("stylist").value;
+        const name = document.getElementById("name").value;
+        const phone = document.getElementById("phone").value;
+        const service = document.getElementById("service").value;
+        const datetime = document.getElementById("datetime").value;
+        const remarks = document.getElementById("remarks").value;
+
+        if (!stylist || !name || !phone || !service || !datetime) {
+            alert("有欄位未填寫");
+            return;
+        }
+
+        console.log("原始日期時間：", datetime);  // 確認原始 datetime 的值
+
+        // 格式化 datetime，先替換 T 和 -，再保留 MM/DD 格式
+        const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
+        console.log("格式化後的日期時間：", formattedDateTime);  // 確認格式化後的日期時間
+
+        const dateTimeParts = formattedDateTime.split(" ");
+        const dateParts = dateTimeParts[0].split("/");  // [2025, 02, 07]
+        const date = `${dateParts[1]}/${dateParts[2]}`;  // 只取 02/07
+        const time = dateTimeParts[1];  // 時間部分
+
+        const finalDateTime = `${date} [${time}]`;  // 組合成 "MM/DD [HH:MM]"
+
+        console.log("最終格式化的日期時間：", finalDateTime);  // 輸出最終格式化結果
+
+        const message = `[這是您的預約表格]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n\n備註：\n${remarks}`;
+
+        liff.sendMessages([{ type: "text", text: message }])
+            .then(() => {
+                liff.closeWindow();
+            })
+            .catch((err) => console.error("發送訊息錯誤", err));
+    }
+</script>
+
+</body>
+</html>
