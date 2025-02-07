@@ -24,20 +24,23 @@
         }
         /* 所有的 input, select 和 textarea 都設置為 100% */
         input, select, textarea {
-            width: 100%; 
+            width: 100%;
             padding: 8px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
+            display: block;
         }
 
-        /* 重置 datetime-local 的樣式 */
+        /* 使用 div 包裹 datetime-local */
+        .datetime-wrapper {
+            width: 100%;
+            display: block;
+        }
+
         input[type="datetime-local"] {
-            -webkit-appearance: none; /* 禁用 iOS 原生樣式 */
-            -moz-appearance: none;    /* 禁用 Firefox 原生樣式 */
-            appearance: none;         /* 禁用其他瀏覽器的原生樣式 */
-            width: 100%;              /* 確保寬度與其他欄位一致 */
+            width: 100%;
             padding: 8px;
             font-size: 16px;
             border: 1px solid #ccc;
@@ -82,7 +85,9 @@
     <input type="text" id="service">  
 
     <label>預約時間：</label>
-    <input type="datetime-local" id="datetime">
+    <div class="datetime-wrapper">
+        <input type="datetime-local" id="datetime">
+    </div>
 
     <label>備註：</label>
     <textarea id="remarks" rows="4"></textarea>
@@ -117,7 +122,7 @@
             const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
             const finalDateTime = formattedDateTime.replace(/(\d{4}\/\d{2}\/\d{2}) (\d{2}:\d{2})/, "$1 [$2]");
 
-            const message = `📌 預約登記\n\n設計師：${stylist}\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：${remarks}`;
+            const message = `📌 預約登記\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：${remarks}`;
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
