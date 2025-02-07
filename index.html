@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>預約表單</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <!-- 引入 Noto Serif TC 字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: "Noto Serif TC", serif;
@@ -48,25 +52,33 @@
             box-sizing: border-box;
         }
 
+        /* 更新提交按鈕樣式 */
         button {
             width: 100%;
             padding: 10px;
             font-size: 18px;
             color: white;
-            background-color: #007BFF;
+            background-color: #333; /* 深灰色 */
             border: none;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 15px;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #555; /* 深灰色 hover 效果 */
         }
 
         /* 圖片顯示樣式 */
         .image-container {
             text-align: center;
             margin-top: 20px;
+        }
+
+        /* 確保圖片不會太大 */
+        img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
         }
     </style>
 </head>
