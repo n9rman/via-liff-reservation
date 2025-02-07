@@ -22,21 +22,20 @@
             margin-top: 10px;
             font-weight: bold;
         }
+        /* 這裡將所有輸入框的長度統一設置為 100% */
         input, select, textarea {
-            width: 100%;  /* 保證所有輸入框的寬度一致 */
+            width: 100%; /* 保證所有輸入框寬度一致 */
             padding: 8px;
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
         }
-        /* 禁用原生樣式，確保一致性 */
+        /* 禁用原生 datetime-local 样式 */
         input[type="datetime-local"] {
-            -webkit-appearance: none; /* 禁用 iOS 的原生樣式 */
-            -moz-appearance: none;    /* 禁用 Firefox 的原生樣式 */
+            -webkit-appearance: none; /* 禁用 iOS 原生樣式 */
+            -moz-appearance: none;    /* 禁用 Firefox 原生樣式 */
             appearance: none;         /* 禁用其他瀏覽器的原生樣式 */
-            width: 100%;              /* 確保輸入框寬度一致 */
-            padding: 8px;
         }
         input::placeholder {
             color: #aaa;
