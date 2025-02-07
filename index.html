@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>預約表單</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <!-- 引入 Noto Serif TC 字體 -->
+    
+    <!-- 引入字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
+
     <style>
         body {
-            font-family: "Noto Serif TC", serif;
+            font-family: 'Noto Serif TC', serif !important; /* 使用 !important 確保字體生效 */
             max-width: 400px;
             margin: auto;
             padding: 20px;
@@ -26,7 +28,6 @@
             margin-top: 10px;
             font-weight: bold;
         }
-        /* 所有的 input, select 和 textarea 都設置為 100% */
         input, select, textarea {
             width: 100%;
             padding: 8px;
@@ -37,7 +38,6 @@
             display: block;
         }
 
-        /* 使用 div 包裹 datetime-local */
         .datetime-wrapper {
             width: 100%;
             display: block;
@@ -52,33 +52,25 @@
             box-sizing: border-box;
         }
 
-        /* 更新提交按鈕樣式 */
         button {
             width: 100%;
             padding: 10px;
             font-size: 18px;
             color: white;
-            background-color: #333; /* 深灰色 */
+            background-color: #333 !important; /* 深灰色 */
             border: none;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 15px;
         }
+
         button:hover {
-            background-color: #555; /* 深灰色 hover 效果 */
+            background-color: #555 !important; /* 深灰色 hover */
         }
 
-        /* 圖片顯示樣式 */
         .image-container {
             text-align: center;
             margin-top: 20px;
-        }
-
-        /* 確保圖片不會太大 */
-        img {
-            width: 100%;
-            max-width: 300px;
-            height: auto;
         }
     </style>
 </head>
@@ -112,14 +104,12 @@
 
     <button onclick="submitReservation()">提交</button>
 
-    <!-- 圖片顯示區域 -->
     <div class="image-container">
         <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // 預設讓 datetime-local 顯示「請選擇日期時間」
             document.getElementById("datetime").value = "";
         });
 
@@ -141,8 +131,6 @@
                 return;
             }
 
-            
-            // 格式化日期時間為 02/07 [14:30]
             const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
             const finalDateTime = formattedDateTime.replace(/(\d{2}\/\d{2}\/\d{2}) (\d{2}:\d{2})/, "$1 [$2]");
 
