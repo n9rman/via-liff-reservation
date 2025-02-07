@@ -118,6 +118,7 @@
                 return;
             }
 
+            
             // 格式化日期時間為 2025/02/07 [14:30]
             const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
             const finalDateTime = formattedDateTime.replace(/(\d{4}\/\d{2}\/\d{2}) (\d{2}:\d{2})/, "$1 [$2]");
