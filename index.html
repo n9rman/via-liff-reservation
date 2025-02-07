@@ -132,7 +132,7 @@
                 return;
             }
 
-const message = `📝【請稍後 等待回覆】\n\n👤 姓名：${name}\n📞 電話：${phone}\n💇 服務項目：${service}\n⏰ 預約時間：${datetime.replace("T", " ")}\n📝 備註：${remarks}`;
+const message = `📝【請稍後 等待回覆】\n\n👤 您的姓名：${name}\n📞 您的電話：${phone}\n💇 服務項目：${service}\n⏰ 預約時間：${datetime.replace("T", " ")}\n📝 您的備註：${remarks}`;
 
 
             liff.sendMessages([{ type: "text", text: message }])
