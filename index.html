@@ -15,15 +15,13 @@
     </style>
 </head>
 <body>
-    <h2>預約 表單</h2>
+    <h2>預約表單</h2>
 
-    <label>姓 名：</label><input type="text" id="name"><br><br>
-    <label>電 話：</label><input type="text" id="phone"><br><br>
-    <label>預約 時間：</label><input type="datetime-local" id="datetime"><br><br>
-        <!-- 新增的服務項目和備註欄位 -->
-    <label>服務 項目：</label><input type="text" id="service"><br><br>
-    <label>備 註：</label><textarea id="remarks" rows="4" cols="50"></textarea><br><br>
-
+    <label>您 的 姓 名：</label><input type="text" id="name"><br><br>
+    <label>您 的 電 話：</label><input type="text" id="phone"><br><br>
+    <label>服 務 項 目：</label><input type="text" id="service"><br><br>    
+    <label>預 約 時 間：</label><input type="datetime-local" id="datetime"><br><br>
+    <label>備       註：</label><textarea id="remarks" rows="4" cols="30"></textarea><br><br>
     <button onclick="submitReservation()">提交</button>
 
     <!-- 圖片會顯示在提交按鈕下方，且會調整為視窗大小 -->
@@ -37,16 +35,16 @@
 
             const name = document.getElementById("name").value;
             const phone = document.getElementById("phone").value;
+            const service = document.getElementById("service").value; 
             const datetime = document.getElementById("datetime").value;
-            const service = document.getElementById("service").value; // 新增服務項目
-            const remarks = document.getElementById("remarks").value; // 新增備註
+            const remarks = document.getElementById("remarks").value; 
 
-            if (!name || !phone || !datetime || !service || !remarks) {
+            if (!name || !phone || !service || !datetime || !remarks) {
                 alert("請填寫所有欄位！");
                 return;
             }
 
-            const message = `📌 已登記 等待回覆\n\n姓名：${name}\n電話：${phone}\n時間：${datetime.replace("T", " ")}\n服務項目：${service}\n備註：${remarks}`;
+            const message = `📌 已登記 等待回覆\n\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${datetime.replace("T", " ")}\n備註：${remarks}`;
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
