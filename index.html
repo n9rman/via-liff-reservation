@@ -111,10 +111,10 @@
         document.getElementById("datetime").value = "";
     });
 
-    // 防止焦點自動跳轉，並強制設置焦點
-    document.getElementById("stylist").addEventListener("focus", function() {
-        this.blur();  // 移除 select 的焦點，避免觸發鍵盤
-        document.getElementById("name").focus();  // 直接設置焦點到下個輸入框
+    // 防止在選擇設計師時觸發鍵盤
+    document.getElementById("stylist").addEventListener("mousedown", function(event) {
+        event.preventDefault(); // 阻止選擇時的焦點變動
+        this.focus();  // 保持 select 元素的焦點
     });
 
     async function submitReservation() {
