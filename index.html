@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>預約表單</title>
@@ -10,59 +8,67 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
-
     <style>
-        /* 設定整體頁面字體 */
         body {
             font-family: "Noto Serif TC", serif;
-            font-size: 16px;
-            color: #333;
-            line-height: 1.5;
+            font-weight: 400;
+            text-align: center;
             padding: 20px;
-            background-color: #f4f7f6;
         }
 
         h2 {
-            font-family: "Noto Serif TC", serif;
-            font-size: 28px;
             font-weight: 700;
-            color: #007BFF;
-            text-align: center;
-            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         label {
-            font-weight: 400;
-            font-size: 18px;
-            color: #555;
+            display: block;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 600;
         }
 
-        /* 設定輸入框和文字區域大小，並防止自動放大 */
-        input[type="text"], input[type="datetime-local"], textarea {
+        input, textarea {
             width: 100%;
             padding: 10px;
-            margin: 8px 0;
+            margin-top: 5px;
+            border: 1px solid #ccc;
             border-radius: 5px;
-            border: 1px solid #ddd;
-            font-size: 16px; /* 保持字體大小一致 */
-            -webkit-text-size-adjust: 100%; /* 防止自動放大 */
-            box-sizing: border-box; /* 確保padding不影響整體寬度 */
+            font-size: 16px; /* 避免 iOS 點擊時放大 */
         }
 
-        /* 提交按鈕 */
+        textarea {
+            height: 80px;
+            resize: none;
+        }
+
+        .input-group {
+            text-align: left;
+        }
+
         button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007BFF;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #28a745;
             color: white;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
+            width: 100%;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background: #218838;
         }
 
         img {
@@ -75,25 +81,36 @@
     </style>
 </head>
 <body>
-
     <h2>via 預約表單</h2>
+    
+    <div class="form-container">
+        <div class="input-group">
+            <label>您 的 姓 名：</label>
+            <input type="text" id="name">
+        </div>
 
-    <label for="name">您 的 姓 名：</label>
-    <input type="text" id="name">
+        <div class="input-group">
+            <label>您 的 電 話：</label>
+            <input type="text" id="phone">
+        </div>
 
-    <label for="phone">您 的 電 話：</label>
-    <input type="text" id="phone">
+        <div class="input-group">
+            <label>服 務 項 目：</label>
+            <input type="text" id="service">
+        </div>
 
-    <label for="service">服 務 項 目：</label>
-    <input type="text" id="service">
+        <div class="input-group">
+            <label>預 約 時 間：</label>
+            <input type="datetime-local" id="datetime">
+        </div>
 
-    <label for="datetime">預 約 時 間：</label><br>
-    <input type="datetime-local" id="datetime"><br><br> <!-- 此處換行 -->
+        <div class="input-group">
+            <label>備 註：</label>
+            <textarea id="remarks"></textarea>
+        </div>
 
-    <label for="remarks">備 註：</label>
-    <textarea id="remarks" rows="4"></textarea>
-
-    <button onclick="submitReservation()">提交</button>
+        <button onclick="submitReservation()">提交</button>
+    </div>
 
     <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約表單圖片">
 
@@ -106,16 +123,17 @@
 
             const name = document.getElementById("name").value;
             const phone = document.getElementById("phone").value;
-            const service = document.getElementById("service").value; 
+            const service = document.getElementById("service").value;
             const datetime = document.getElementById("datetime").value;
-            const remarks = document.getElementById("remarks").value; 
+            const remarks = document.getElementById("remarks").value;
 
             if (!name || !phone || !service || !datetime) {
                 alert("請填寫所有欄位！");
                 return;
             }
 
-            const message = `請稍後 等待回覆\n\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${datetime.replace("T", " ")}\n備註：${remarks}`;
+const message = `📝【請稍後 等待回覆】\n\n👤 姓名：${name}\n📞 電話：${phone}\n💇 服務項目：${service}\n⏰ 預約時間：${datetime.replace("T", " ")}\n📝 備註：${remarks}`;
+
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
