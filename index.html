@@ -30,6 +30,9 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
+        input::placeholder {
+            color: #aaa;
+        }
         button {
             width: 100%;
             padding: 10px;
@@ -57,7 +60,6 @@
         <option value="不指定設計師">不指定設計師</option>
     </select>
 
-    
     <label>您的姓名：</label>
     <input type="text" id="name">
 
@@ -76,6 +78,11 @@
     <button onclick="submitReservation()">提交</button>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // 預設讓 datetime-local 顯示「請選擇日期時間」
+            document.getElementById("datetime").value = "";
+        });
+
         async function submitReservation() {
             await liff.init({ liffId: "2006867121-OlgLV60n" });
             if (!liff.isLoggedIn()) {
@@ -94,7 +101,11 @@
                 return;
             }
 
-            const message = `📌 預約登記\n\n設計師：${stylist}\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${datetime.replace("T", " ")}\n備註：${remarks}`;
+            // 格式化日期時間為 2025/02/07 [14:30]
+            const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
+            const finalDateTime = formattedDateTime.replace(/(\d{4}\/\d{2}\/\d{2}) (\d{2}:\d{2})/, "$1 [$2]");
+
+            const message = `📌 預約登記\n\n設計師：${stylist}\n姓名：${name}\n電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n備註：${remarks}`;
 
             liff.sendMessages([{ type: "text", text: message }])
                 .then(() => {
