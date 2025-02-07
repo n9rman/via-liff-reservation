@@ -113,10 +113,10 @@
 
     // 監聽設計師選擇框，防止鍵盤自動彈出
     document.getElementById("stylist").addEventListener("change", function() {
-        // 延遲焦點設置，避免鍵盤快速彈出
+        // 防止選擇設計師時焦點自動跳轉
         setTimeout(function() {
-            document.getElementById("name").focus();
-        }, 300);  // 延遲 300 毫秒
+            document.getElementById("name").focus();  // 手動將焦點移到下一個輸入框
+        }, 0);  // 即刻執行，避免焦點跳轉
     });
 
     async function submitReservation() {
