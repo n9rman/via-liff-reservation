@@ -6,7 +6,6 @@
     <title>via hair salon</title>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <!-- 引入 Google 字體 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
 
     <style>
@@ -41,7 +40,7 @@
             display: block;
         }
 
-        input[type="datetime-local"] {
+        input[type="text"] {
             width: 100%;
             padding: 8px;
             font-size: 16px;
@@ -76,6 +75,12 @@
             color: red;
             font-size: 14px;
             display: none;
+        }
+
+        /* 顯示休假日的樣式 */
+        .disabled-date {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
         }
     </style>
 </head>
@@ -134,6 +139,12 @@
             minDate: "today",  // 禁止選擇今天以前的日期
             onChange: function(selectedDates) {
                 checkAvailability(selectedDates[0]);
+            },
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                const selectedDate = dayElem.dateObj.toISOString().split('T')[0];
+                if (vacationData["Mia"].includes(selectedDate) || vacationData["Michelle"].includes(selectedDate) || vacationData["不指定設計師"].includes(selectedDate)) {
+                    dayElem.classList.add("disabled-date");
+                }
             }
         });
 
