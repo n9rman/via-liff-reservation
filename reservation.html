@@ -58,10 +58,19 @@
             border-radius: 50%;
             background-color: red;
         }
+        .image-container { text-align: center; margin-top: 20px; }
+        /* Add some spacing for the date selector and time selector */
+        .date-picker-wrapper {
+            position: relative;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
     <h2>via 預 約 表 單</h2>
+    <div class="image-container">
+        <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
+    </div>
     
     <label>設 計 師</label>
     <select id="stylist">
@@ -82,6 +91,10 @@
 
     <label>預 約 時 間  (三 十 分 鐘 為 一 個 單 位)</label>
     <div class="datetime-wrapper">
+        <div class="date-picker-wrapper">
+            <input type="date" id="date">  <!-- 日期選擇器 -->
+            <div id="circleContainer"></div> <!-- 容納紅圈的位置 -->
+        </div>
         <input type="time" id="time" step="1800"> <!-- 30分鐘為單位 -->
     </div>
 
@@ -96,9 +109,9 @@
     });
 
     let holidays = {
-        "Michelle": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12", "19", "20", "26"],
-        "Mia": ["1", "2", "13", "14", "15", "21", "26", "27"],
-        "不指定設計師": ["1", "2", "26"]
+        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09", "2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
+        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
+        "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
     document.getElementById("stylist").addEventListener("change", function(event) {
@@ -107,17 +120,26 @@
     });
 
     function updateHolidayDates(stylist) {
-        const dateInputs = document.querySelectorAll('.datetime-wrapper input[type="time"]');
+        const selectedDate = document.getElementById("date").value;  // 获取选中的日期
+        const disabledDates = holidays[stylist] || [];
 
-        // 清除所有圓圈
-        document.querySelectorAll('.circle').forEach(circle => circle.remove());
+        if (disabledDates.length > 0) {
+            const circleContainer = document.getElementById("circleContainer");
+            circleContainer.innerHTML = '';  // 清除之前的紅圈
+            disabledDates.forEach(date => {
+                const dateElement = document.getElementById("date");
 
-        holidays[stylist]?.forEach(date => {
-            // 顯示紅色圓圈
-            let circle = document.createElement('div');
-            circle.classList.add('circle');
-            document.querySelector(`#datetime`).appendChild(circle);
-        });
+                if (dateElement.value === date) {
+                    // 顯示警告並標註紅圈
+                    alert("這天為休假日");
+                }
+
+                // 在日期選擇器中動態添加紅圈
+                const circle = document.createElement('div');
+                circle.classList.add('circle');
+                circleContainer.appendChild(circle);
+            });
+        }
     }
 
     async function submitReservation() {
@@ -132,17 +154,18 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
+        const date = document.getElementById("date").value;
         const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
-        if (!stylist || !name || !phone || !service || !time) {
+        if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
             return;
         }
 
-        const finalTime = time;
+        const finalTime = `${date} ${time}`;
 
-        const message = 這是您的預約表格\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks};
+        const message = `這是您的預約表格\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
