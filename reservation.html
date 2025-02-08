@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>via hair salon</title>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> <!-- 引入 flatpickr -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <style>
@@ -86,7 +87,7 @@
     <div class="datetime-wrapper">
         <div>
             <label for="date">選擇日期</label>
-            <input type="date" id="date">
+            <input type="text" id="date">
         </div>
 
         <div class="time-select-wrapper">
@@ -114,21 +115,26 @@
 
     // 更新休假日期紅色圈圈
     function updateHolidayDates(stylist) {
-        const selectedDate = document.getElementById("date").value;
         const disabledDates = holidays[stylist] || [];
 
-        // 清空之前的紅圈
-        const dateInput = document.getElementById("date");
-
-        // 遍歷休假日期，若日期選擇器與之匹配，顯示紅圈
-        disabledDates.forEach(date => {
-            // 在日曆上標註紅色圓圈
-            if (selectedDate === date) {
-                alert("這天為休假日");
-                // 此處可加入UI處理，這裡是做為一個簡單提示
+        // 使用 flatpickr 插件初始化日期選擇器
+        flatpickr("#date", {
+            disable: disabledDates, // 禁用休假日期
+            dateFormat: "Y-m-d", // 設置日期格式
+            onChange: function(selectedDates, dateStr, instance) {
+                // 在選擇日期後，判斷是否為休假日
+                if (disabledDates.includes(dateStr)) {
+                    alert("這天為休假日");
+                }
+            },
+            locale: {
+                firstDayOfWeek: 1 // 設置每週的第一天是星期一
             }
         });
     }
+
+    // 設置時間選擇器，每30分鐘為單位
+    document.getElementById("time").setAttribute("step", "1800"); // 每30分鐘為一單位
 
     async function submitReservation() {
         await liff.init({ liffId: "2006867121-OlgLV60n" });
