@@ -124,14 +124,14 @@
                 const stylist = document.getElementById("stylist").value;
                 const disabledDates = vacationData[stylist] || [];
                 
-                // 當選中的日期是休假日，給予紅色圓圈標註
+                // 顯示紅色圓圈標註休假日
                 if (disabledDates.includes(selectedDate)) {
                     dayElem.classList.add("disabled-date");
-
+                    
                     // 點擊紅色圓圈後顯示休假日提示
                     dayElem.addEventListener("click", function() {
                         document.getElementById("warning-message").style.display = 'block';  // 顯示警告訊息
-                        datepicker.clear();  // 清空日期選擇
+                        document.getElementById("warning-message").innerText = `這天是休假日：${selectedDate}`;  // 顯示具體休假日訊息
                     });
                 }
             }
@@ -153,6 +153,7 @@
             // 如果所選日期為休假日，顯示警告訊息
             if (disabledDates.includes(selectedDate.toISOString().split('T')[0])) {
                 document.getElementById("warning-message").style.display = 'block';  // 顯示警告訊息
+                document.getElementById("warning-message").innerText = `這天是休假日：${selectedDate.toISOString().split('T')[0]}`;
                 datepicker.clear();  // 清空選擇的日期
             } else {
                 document.getElementById("warning-message").style.display = 'none';  // 隱藏警告訊息
