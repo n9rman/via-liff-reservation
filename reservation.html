@@ -70,6 +70,13 @@
             text-align: center;
             margin-top: 20px;
         }
+
+        /* 提示警告的樣式 */
+        .warning-message {
+            color: red;
+            font-size: 14px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -106,6 +113,9 @@
     <textarea id="remarks" rows="3"></textarea>
 
     <button onclick="submitReservation()">提交</button>
+
+    <!-- 顯示警告訊息 -->
+    <div class="warning-message" id="warning-message">您選擇的日期是休假日，請選擇其他日期！</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -146,9 +156,16 @@
         const stylist = document.getElementById("stylist").value;
         const disabledDates = vacationData[stylist] || [];
 
+        // 檢查選擇的日期是否為休假日
         if (disabledDates.includes(date)) {
-            alert("您選擇的日期是休假日，請選擇其他日期！");
-            document.getElementById("date").value = ""; // 清空選擇
+            // 顯示警告訊息
+            document.getElementById("warning-message").style.display = 'block';
+
+            // 清空日期選擇
+            document.getElementById("date").value = "";
+        } else {
+            // 隱藏警告訊息
+            document.getElementById("warning-message").style.display = 'none';
         }
     }
 
