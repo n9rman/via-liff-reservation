@@ -133,7 +133,7 @@
         // 初始化 flatpickr
         const datepicker = flatpickr("#datepicker", {
             dateFormat: "Y-m-d",
-            disable: [],
+            disable: [],  // 初始化禁用日期為空
             minDate: "today",  // 禁止選擇今天以前的日期
             onChange: function(selectedDates) {
                 checkAvailability(selectedDates[0]);
@@ -190,7 +190,7 @@
 
         console.log("預約日期：", date);
 
-        const message = `[這是您的預約表格]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date}\n\n備註：\n${remarks}`;
+        const message = `這是您的預約表格\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
