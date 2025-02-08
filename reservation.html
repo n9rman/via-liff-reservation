@@ -125,14 +125,14 @@
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("datepicker").value = "";
 
-        // 初始化 flatpickr
+        // 初始化休假日期資料
         const vacationData = {
             "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
             "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09", "2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
             "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
         };
 
-        // 初始化日期選擇器
+        // 初始化 flatpickr
         const datepicker = flatpickr("#datepicker", {
             dateFormat: "Y-m-d",
             disable: [],
@@ -142,17 +142,21 @@
             },
             onDayCreate: function(dObj, dStr, fp, dayElem) {
                 const selectedDate = dayElem.dateObj.toISOString().split('T')[0];
-                if (vacationData["Mia"].includes(selectedDate) || vacationData["Michelle"].includes(selectedDate) || vacationData["不指定設計師"].includes(selectedDate)) {
+                const stylist = document.getElementById("stylist").value;
+                const disabledDates = vacationData[stylist] || [];
+                
+                if (disabledDates.includes(selectedDate)) {
                     dayElem.classList.add("disabled-date");
                 }
             }
         });
 
-        // 當設計師選擇更改時
+        // 當設計師選擇更改時，更新日期選擇器的禁用日期
         document.getElementById("stylist").addEventListener("change", function() {
             const stylist = this.value;
             const disabledDates = vacationData[stylist] || [];
             datepicker.set("disable", disabledDates);  // 禁用選擇的休假日期
+            document.getElementById("warning-message").style.display = 'none';  // 清除警告訊息
         });
 
         function checkAvailability(selectedDate) {
