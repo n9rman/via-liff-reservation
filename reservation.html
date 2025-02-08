@@ -42,6 +42,25 @@
         }
         button:hover { background-color: #555; }
         .image-container { text-align: center; margin-top: 20px; }
+        .highlighted-date {
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            text-align: center;
+            line-height: 20px;
+        }
+        /* 日期選擇器 */
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
@@ -77,17 +96,58 @@
 
     <button onclick="submitReservation()">提交</button>
 
+    <div id="holiday-warning" style="display: none; background: red; color: white; padding: 10px; margin-top: 10px; text-align: center;">
+        這天為休假日
+    </div>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("datetime").value = "";  // 清空時間輸入框
+    // 設定每位設計師的休假日期
+    const holidays = {
+        "Michelle": [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 19, 20, 26],  // Michelle 的休假日期
+        "Mia": [1, 2, 13, 14, 15, 21, 26, 27],                  // Mia 的休假日期
+        "不指定設計師": [1, 2, 26]                              // 不指定設計師的休假日期
+    };
+
+    let selectedStylist = null;  // 儲存選擇的設計師
+
+    // 當設計師選擇變更時，更新選擇的設計師並顯示休假日
+    document.getElementById("stylist").addEventListener("change", function() {
+        selectedStylist = this.value;  // 設定當前選擇的設計師
+        const holidayDates = holidays[selectedStylist] || [];  // 取得對應設計師的休假日期
+        highlightHolidayDates(holidayDates);  // 呼叫函數顯示休假日期
     });
 
-    // 防止在選擇設計師時觸發鍵盤
-    document.getElementById("stylist").addEventListener("mousedown", function(event) {
-        event.preventDefault();  // 阻止選擇時的焦點變動
-        this.focus();  // 保持 select 元素的焦點
-    });
+    // 高亮顯示休假日期
+    function highlightHolidayDates(holidayDates) {
+        const dateInput = document.getElementById("datetime");
 
+        // 監聽日期選擇器的輸入事件
+        dateInput.addEventListener("input", function(event) {
+            const selectedDate = new Date(event.target.value);
+            const day = selectedDate.getDate();  // 取得選擇的日期
+
+            // 檢查選擇的日期是否是休假日
+            if (holidayDates.includes(day)) {
+                showHolidayWarning();  // 如果是休假日，顯示警告
+            } else {
+                hideHolidayWarning();  // 如果不是休假日，隱藏警告
+            }
+        });
+    }
+
+    // 顯示休假日警告
+    function showHolidayWarning() {
+        const warningMessage = document.getElementById("holiday-warning");
+        warningMessage.style.display = "block";  // 顯示警告訊息
+    }
+
+    // 隱藏休假日警告
+    function hideHolidayWarning() {
+        const warningMessage = document.getElementById("holiday-warning");
+        warningMessage.style.display = "none";  // 隱藏警告訊息
+    }
+
+    // 提交預約
     async function submitReservation() {
         await liff.init({ liffId: "2006867121-OlgLV60n" });
 
@@ -121,6 +181,5 @@
             .catch(err => console.error("發送訊息錯誤", err));
     }
 </script>
-
 </body>
 </html>
