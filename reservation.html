@@ -98,7 +98,8 @@
 
     <label>預 約 時 間  (三 十 分 鐘 為 一 個 單 位)</label>
     <div class="datetime-wrapper">
-        <input type="datetime-local" id="datetime">
+        <input type="date" id="date" onchange="checkAvailability()">
+        <input type="time" id="time">
     </div>
 
     <label>備 註</label>
@@ -108,13 +109,8 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("datetime").value = "";
-    });
-
-    // 防止在選擇設計師時觸發鍵盤
-    document.getElementById("stylist").addEventListener("mousedown", function(event) {
-        event.preventDefault(); // 阻止選擇時的焦點變動
-        this.focus();  // 保持 select 元素的焦點
+        document.getElementById("date").value = "";
+        document.getElementById("time").value = "";
     });
 
     // 設計師的休假日期設定
@@ -127,25 +123,34 @@
     // 動態禁用日期
     document.getElementById("stylist").addEventListener("change", function() {
         const stylist = this.value;
-        const datePicker = document.getElementById("datetime");
+        const datePicker = document.getElementById("date");
 
-        // 清除所有禁用的日期
-        datePicker.setAttribute('min', null); // 清除日期最小值
-        datePicker.setAttribute('max', null); // 清除日期最大值
+        // 先清除所有禁用日期
+        const disabledDates = vacationData[stylist] || [];
 
-        // 根據選擇的設計師來禁用對應的休假日期
-        if (vacationData[stylist]) {
-            const disabledDates = vacationData[stylist];
-            datePicker.setAttribute('min', '2025-02-01T00:00'); // 可以自定義一個合理的起始時間
+        // 生成禁用日期選項
+        const today = new Date().toISOString().split('T')[0]; // 今天日期
+        datePicker.setAttribute('min', today); // 禁止選擇今天以前的日期
 
-            // 禁用每個休假日期
-            for (let date of disabledDates) {
-                let formattedDate = date + "T00:00"; // 設置為日期的00:00
-                let option = new Option(formattedDate, formattedDate);
-                datePicker.setAttribute('disabled', true); 
+        // 禁用所有休假日期
+        datePicker.querySelectorAll('option').forEach(option => {
+            if (disabledDates.includes(option.value)) {
+                option.disabled = true;
             }
-        }
+        });
     });
+
+    // 檢查是否選擇的日期為休假日
+    function checkAvailability() {
+        const date = document.getElementById("date").value;
+        const stylist = document.getElementById("stylist").value;
+        const disabledDates = vacationData[stylist] || [];
+
+        if (disabledDates.includes(date)) {
+            alert("您選擇的日期是休假日，請選擇其他日期！");
+            document.getElementById("date").value = ""; // 清空選擇
+        }
+    }
 
     async function submitReservation() {
         await liff.init({ liffId: "2006867121-OlgLV60n" });
@@ -157,28 +162,19 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const datetime = document.getElementById("datetime").value;
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
-        if (!stylist || !name || !phone || !service || !datetime) {
+        if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
             return;
         }
 
-        console.log("原始日期時間：", datetime);  // 確認原始 datetime 的值
+        console.log("預約日期：", date);  // 確認日期
+        console.log("預約時間：", time);  // 確認時間
 
-        // 格式化 datetime，先替換 T 和 -，再保留 MM/DD 格式
-        const formattedDateTime = datetime.replace("T", " ").replace(/-/g, "/");
-        console.log("格式化後的日期時間：", formattedDateTime);  // 確認格式化後的日期時間
-
-        const dateTimeParts = formattedDateTime.split(" ");
-        const dateParts = dateTimeParts[0].split("/");  // [2025, 02, 07]
-        const date = `${dateParts[1]}/${dateParts[2]}`;  // 只取 02/07
-        const time = dateTimeParts[1];  // 時間部分
-
-        const finalDateTime = `${date} [${time}]`;  // 組合成 "MM/DD [HH:MM]"
-
-        console.log("最終格式化的日期時間：", finalDateTime);  // 輸出最終格式化結果
+        const finalDateTime = `${date} [${time}]`;
 
         const message = `[這是您的預約表格]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n\n備註：\n${remarks}`;
 
