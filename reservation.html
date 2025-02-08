@@ -152,7 +152,7 @@
             disableMobile: true,
             minDate: "today",  // 限制選擇當天之後的日期
             onReady: function(selectedDates, dateStr, instance) {
-                addHolidayCircles(instance);
+                addHolidayCircles(instance);  // 確保紅圈標註
             },
             onChange: function(selectedDates, dateStr, instance) {
                 checkHoliday(dateStr);
@@ -165,8 +165,9 @@
         const holidays = holidayDates[selectedStylist] || holidayDates["不指定設計師"];
         
         holidays.forEach(day => {
-            const dateStr = `02/${day}`;
-            const dayElem = instance.calendarContainer.querySelector(`[aria-label='${dateStr}']`);
+            // 將休假日期轉換為 MM/DD 格式
+            const formattedDate = `02/${day.padStart(2, '0')}`;
+            const dayElem = instance.calendarContainer.querySelector(`[aria-label='${formattedDate}']`);
             
             if (dayElem) {
                 dayElem.style.border = "2px solid red";
