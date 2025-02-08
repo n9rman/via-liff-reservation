@@ -109,7 +109,13 @@
 
     <label>選擇時間</label>
     <select id="time-slot">
-        <!-- 使用30分鐘為單位的時間選項 -->
+        <!-- 使用9:00到17:00範圍，按30分鐘一個單位 -->
+        <option value="09:00">09:00</option>
+        <option value="09:30">09:30</option>
+        <option value="10:00">10:00</option>
+        <option value="10:30">10:30</option>
+        <option value="11:00">11:00</option>
+        <option value="11:30">11:30</option>
         <option value="12:00">12:00</option>
         <option value="12:30">12:30</option>
         <option value="13:00">13:00</option>
@@ -118,6 +124,8 @@
         <option value="14:30">14:30</option>
         <option value="15:00">15:00</option>
         <option value="15:30">15:30</option>
+        <option value="16:00">16:00</option>
+        <option value="16:30">16:30</option>
     </select>
 
     <label>備 註</label>
@@ -142,6 +150,7 @@
             enableTime: false,
             dateFormat: "m/d",  // 只顯示月份和日期
             disableMobile: true,
+            minDate: "today",  // 限制選擇當天之後的日期
             onReady: function(selectedDates, dateStr, instance) {
                 addHolidayCircles(instance);
             },
