@@ -82,6 +82,12 @@
         document.getElementById("datetime").value = "";  // 清空時間輸入框
     });
 
+    // 防止在選擇設計師時觸發鍵盤
+    document.getElementById("stylist").addEventListener("mousedown", function(event) {
+        event.preventDefault();  // 阻止選擇時的焦點變動
+        this.focus();  // 保持 select 元素的焦點
+    });
+
     async function submitReservation() {
         await liff.init({ liffId: "2006867121-OlgLV60n" });
 
