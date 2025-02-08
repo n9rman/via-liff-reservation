@@ -46,9 +46,6 @@
         .datetime-wrapper input {
             width: 100%;
         }
-        .disabled-date {
-            background-color: red !important;  /* 設置紅色圈圈的背景 */
-        }
         .circle { 
             position: absolute;
             top: 5px;
@@ -59,10 +56,16 @@
             background-color: red;
         }
         .image-container { text-align: center; margin-top: 20px; }
-        /* Add some spacing for the date selector and time selector */
+        /* 日期選擇的樣式 */
         .date-picker-wrapper {
             position: relative;
             display: inline-block;
+        }
+        .disabled-date {
+            color: red !important;
+        }
+        .time-select-wrapper {
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -95,7 +98,9 @@
             <input type="date" id="date">  <!-- 日期選擇器 -->
             <div id="circleContainer"></div> <!-- 容納紅圈的位置 -->
         </div>
-        <input type="time" id="time" step="1800"> <!-- 30分鐘為單位 -->
+        <div class="time-select-wrapper">
+            <input type="time" id="time" step="1800"> <!-- 30分鐘為單位 -->
+        </div>
     </div>
 
     <label>備 註</label>
@@ -123,23 +128,21 @@
         const selectedDate = document.getElementById("date").value;  // 获取选中的日期
         const disabledDates = holidays[stylist] || [];
 
-        if (disabledDates.length > 0) {
-            const circleContainer = document.getElementById("circleContainer");
-            circleContainer.innerHTML = '';  // 清除之前的紅圈
-            disabledDates.forEach(date => {
-                const dateElement = document.getElementById("date");
+        // 清空之前的紅圈
+        const circleContainer = document.getElementById("circleContainer");
+        circleContainer.innerHTML = '';
 
-                if (dateElement.value === date) {
-                    // 顯示警告並標註紅圈
-                    alert("這天為休假日");
-                }
+        // 如果有休假日期，則將其標註紅色圈圈
+        disabledDates.forEach(date => {
+            const circle = document.createElement('div');
+            circle.classList.add('circle');
+            // 如果選擇的日期是休假日，顯示紅圈
+            if (selectedDate === date) {
+                alert("這天為休假日");
+            }
 
-                // 在日期選擇器中動態添加紅圈
-                const circle = document.createElement('div');
-                circle.classList.add('circle');
-                circleContainer.appendChild(circle);
-            });
-        }
+            circleContainer.appendChild(circle);
+        });
     }
 
     async function submitReservation() {
