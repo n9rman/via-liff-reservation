@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>via hair salon</title>
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -13,7 +14,6 @@
             margin: auto;
             padding: 20px;
             background-color: #f9f9f9;
-            position: relative;
         }
         h2 { text-align: center; color: #333; }
         label {
@@ -29,8 +29,6 @@
             border-radius: 5px;
             box-sizing: border-box;
             display: block;
-            position: relative;
-            z-index: 1;  /* 預設設置所有元素的 z-index */
         }
         button {
             width: 100%;
@@ -46,37 +44,37 @@
         button:hover { background-color: #555; }
         .image-container { text-align: center; margin-top: 20px; }
 
-        /* 自訂警告視窗樣式 */
-        .alert {
+        .custom-alert {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.7);
-            color: white;
+            background-color: #fff;
             padding: 20px;
-            border-radius: 10px;
-            z-index: 9999;  /* 確保警告視窗顯示在最前面 */
-            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
         }
-        .alert button {
+
+        .custom-alert p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .custom-alert button {
+            padding: 5px 10px;
             margin-top: 10px;
-            background-color: red;
+            background-color: #333;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
             cursor: pointer;
+            border-radius: 5px;
         }
-        .alert button:hover {
-            background-color: darkred;
-        }
-        
-        /* 設置日期選擇器 z-index 更低 */
-        .datetime-wrapper input[type="datetime-local"] {
-            z-index: 0; /* 設置日期選擇器的 z-index 比警告視窗低 */
-            position: relative;  /* 確保日期選擇器也具有定位 */
+
+        .custom-alert button:hover {
+            background-color: #555;
         }
     </style>
 </head>
@@ -105,7 +103,7 @@
 
     <label>預 約 時 間  (三 十 分 鐘 為 一 個 單 位)</label>
     <div class="datetime-wrapper">
-        <input type="datetime-local" id="datetime">
+        <input id="datetime" type="text">
     </div>
 
     <label>備 註</label>
@@ -113,36 +111,62 @@
 
     <button onclick="submitReservation()">提交</button>
 
-    <!-- 自訂警告視窗 -->
-    <div id="alertBox" class="alert">
+    <div class="custom-alert" id="alert">
         <p>這天為休假日</p>
         <button onclick="closeAlert()">關閉</button>
     </div>
 
 <script>
-    // 設定每位設計師的休假日期
-    const holidays = {
-        "Michelle": [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 19, 20, 26],  // Michelle 的休假日期
-        "Mia": [1, 2, 13, 14, 15, 21, 26, 27],                  // Mia 的休假日期
-        "不指定設計師": [1, 2, 26]                              // 不指定設計師的休假日期
+    const holidayDates = {
+        "Mia": ["1", "2", "13", "14", "15", "21", "26", "27"],
+        "Michelle": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12", "19", "20", "26"],
+        "不指定設計師": ["1", "2", "26"]
     };
 
-    let selectedStylist = null;  // 儲存選擇的設計師
-
-    // 當設計師選擇變更時，更新選擇的設計師並顯示休假日
-    document.getElementById("stylist").addEventListener("change", function() {
-        selectedStylist = this.value;  // 設定當前選擇的設計師
+    document.addEventListener("DOMContentLoaded", function() {
+        flatpickr("#datetime", {
+            enableTime: true,
+            dateFormat: "m/d H:i",  // 只顯示月份、日期和時間
+            minuteIncrement: 30,   // 每 30 分鐘為一單位
+            disableMobile: true,
+            onReady: function(selectedDates, dateStr, instance) {
+                addHolidayCircles(instance);
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+                checkHoliday(dateStr);
+            }
+        });
     });
 
-    // 提交預約
-    async function submitReservation() {
-        await liff.init({ liffId: "2006867121-OlgLV60n" });
+    function addHolidayCircles(instance) {
+        const selectedStylist = document.getElementById("stylist").value;
+        const holidays = holidayDates[selectedStylist] || holidayDates["不指定設計師"];
 
-        if (!liff.isLoggedIn()) {
-            liff.login();
-            return; // 如果沒登入，則停止後續操作
+        holidays.forEach(day => {
+            const dateStr = `02/${day}`;
+            const dayElem = instance.calendarContainer.querySelector(`[aria-label='${dateStr}']`);
+            if (dayElem) {
+                dayElem.style.border = "2px solid red";
+                dayElem.style.borderRadius = "50%";
+            }
+        });
+    }
+
+    function checkHoliday(dateStr) {
+        const selectedStylist = document.getElementById("stylist").value;
+        const holidays = holidayDates[selectedStylist] || holidayDates["不指定設計師"];
+        const day = dateStr.split("/")[1];
+
+        if (holidays.includes(day)) {
+            document.getElementById("alert").style.display = "block";
         }
+    }
 
+    function closeAlert() {
+        document.getElementById("alert").style.display = "none";
+    }
+
+    async function submitReservation() {
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
@@ -155,42 +179,19 @@
             return;
         }
 
-        const [date, time] = datetime.split("T");
-        const formattedDate = date.split("-").slice(1).join("/");  // 轉換日期格式為 MM/DD
-        const finalDateTime = `${formattedDate} [${time}]`;
+        const message = `這是您的預約表格\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${datetime}\n備註：${remarks}`;
 
-        const message = `這是您的預約表格\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n\n備註：\n${remarks}`;
+        await liff.init({ liffId: "2006867121-OlgLV60n" });
+        if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
+        }
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
                 liff.closeWindow();
             })
             .catch(err => console.error("發送訊息錯誤", err));
-    }
-
-    // 監聽日期選擇器的變化
-    document.getElementById("datetime").addEventListener("change", function(event) {
-        const selectedDate = new Date(event.target.value);
-        const day = selectedDate.getDate();  // 取得選擇的日期
-
-        const holidayDates = holidays[selectedStylist] || [];  // 取得選擇的設計師的休假日期
-
-        // 檢查選擇的日期是否是休假日
-        if (holidayDates.includes(day)) {
-            showAlert();  // 顯示自訂警告視窗
-        }
-    });
-
-    // 顯示自訂警告視窗
-    function showAlert() {
-        const alertBox = document.getElementById("alertBox");
-        alertBox.style.display = "block";
-    }
-
-    // 關閉自訂警告視窗
-    function closeAlert() {
-        const alertBox = document.getElementById("alertBox");
-        alertBox.style.display = "none";
     }
 </script>
 
