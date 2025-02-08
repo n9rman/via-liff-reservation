@@ -6,8 +6,6 @@
     <title>via hair salon</title>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
-
     <style>
         body {
             font-family: 'Noto Serif TC', serif !important;
@@ -40,44 +38,12 @@
             display: block;
         }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            font-size: 18px;
-            color: white;
-            background-color: #333 !important;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        button:hover {
-            background-color: #555 !important;
-        }
-
-        .image-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        /* 提示警告的樣式 */
         .warning-message {
             color: red;
             font-size: 14px;
             display: none;
         }
 
-        /* 顯示休假日的樣式 */
         .disabled-date {
             background-color: #f8d7da !important;
             color: #721c24 !important;
@@ -94,13 +60,8 @@
 <body>
     <h2>via 預 約 表 單</h2>
 
-    <div class="image-container">
-        <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
-    </div>
-    
     <label>設 計 師</label>
     <select id="stylist">
-        <option value="" selected>請選擇設計師</option>
         <option value="Michelle">Michelle</option>
         <option value="Mia">Mia</option>
         <option value="不指定設計師">不指定設計師</option>
@@ -112,96 +73,63 @@
     <label>您 的 電 話</label>
     <input type="text" id="phone">
 
-    <label>服 務 項 目</label>
-    <input type="text" id="service">  
+    <label>服務項目</label>
+    <input type="text" id="service">
 
-    <label>預 約 時 間  (三 十 分 鐘 為 一 個 單 位)</label>
-    <div class="datetime-wrapper">
-        <input type="text" id="datepicker">
-    </div>
-
-    <label>備 註</label>
-    <textarea id="remarks" rows="3"></textarea>
+    <label>預約時間</label>
+    <input type="text" id="datepicker">
 
     <button onclick="submitReservation()">提交</button>
 
-    <!-- 顯示警告訊息 -->
     <div class="warning-message" id="warning-message">您選擇的日期是休假日，請選擇其他日期！</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // 初始化休假日期資料
         const vacationData = {
-            "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
-            "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09", "2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
-            "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
+            "Mia": ["2025-02-01", "2025-02-02"],
+            "Michelle": ["2025-02-03", "2025-02-04"],
+            "不指定設計師": ["2025-02-05"]
         };
 
-        // 初始化 flatpickr
         const datepicker = flatpickr("#datepicker", {
             dateFormat: "Y-m-d",
-            disable: [],  // 初始化禁用日期為空
-            minDate: "today",  // 禁止選擇今天以前的日期
-            onChange: function(selectedDates) {
-                checkAvailability(selectedDates[0]);
-            },
+            disable: [],
+            minDate: "today",
             onDayCreate: function(dObj, dStr, fp, dayElem) {
                 const selectedDate = dayElem.dateObj.toISOString().split('T')[0];
                 const stylist = document.getElementById("stylist").value;
                 const disabledDates = vacationData[stylist] || [];
                 
-                // 顯示紅色圓圈標註休假日
                 if (disabledDates.includes(selectedDate)) {
                     dayElem.classList.add("disabled-date");
-
-                    // 點擊紅色圓圈後顯示休假日提示
                     dayElem.addEventListener("click", function() {
-                        document.getElementById("warning-message").style.display = 'block';  // 顯示警告訊息
+                        document.getElementById("warning-message").style.display = 'block';
                     });
                 }
             }
         });
 
-        // 當設計師選擇更改時，更新日期選擇器的禁用日期
         document.getElementById("stylist").addEventListener("change", function() {
             const stylist = this.value;
             const disabledDates = vacationData[stylist] || [];
-            datepicker.set("disable", disabledDates);  // 禁用選擇的休假日期
-            document.getElementById("warning-message").style.display = 'none';  // 清除警告訊息
+            datepicker.set("disable", disabledDates);
+            document.getElementById("warning-message").style.display = 'none';
         });
-
-        function checkAvailability(selectedDate) {
-            const stylist = document.getElementById("stylist").value;
-            const disabledDates = vacationData[stylist] || [];
-            
-            if (disabledDates.includes(selectedDate.toISOString().split('T')[0])) {
-                document.getElementById("warning-message").style.display = 'block';
-                datepicker.clear();  // 清空日期選擇
-            } else {
-                document.getElementById("warning-message").style.display = 'none';
-            }
-        }
     });
 
-    async function submitReservation() {
-        // 初始化 LIFF
-        await liff.init({ liffId: "2006867121-OlgLV60n" });
-
-        if (!liff.isLoggedIn()) {
-            liff.login();
-        }
-
-        const stylist = document.getElementById("stylist").value;
+    function submitReservation() {
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
         const date = document.getElementById("datepicker").value;
-        const remarks = document.getElementById("remarks").value;
 
-        // 檢查是否填寫所有欄位
-        if (!stylist || !name || !phone || !service || !date) {
-            alert("有欄位未填寫");
+        if (!name || !phone || !service || !date) {
+            alert("請填寫所有欄位");
             return;
         }
 
-        const message = `這是您的
+        alert("表單已提交");
+    }
+</script>
+</body>
+</html>
