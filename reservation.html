@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>via hair salon</title>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -13,6 +13,7 @@
             margin: auto;
             padding: 20px;
             background-color: #f9f9f9;
+            box-sizing: border-box;
         }
         h2 { text-align: center; color: #333; }
         label {
@@ -41,14 +42,26 @@
             margin-top: 15px;
         }
         button:hover { background-color: #555; }
-        .image-container { text-align: center; margin-top: 20px; }
+        .datetime-wrapper { margin-top: 20px; }
+        .datetime-wrapper input {
+            width: 100%;
+        }
+        .disabled-date {
+            background-color: red !important;  /* 設置紅色圈圈的背景 */
+        }
+        .circle { 
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: red;
+        }
     </style>
 </head>
 <body>
     <h2>via 預 約 表 單</h2>
-    <div class="image-container">
-        <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
-    </div>
     
     <label>設 計 師</label>
     <select id="stylist">
@@ -67,91 +80,77 @@
     <label>服 務 項 目</label>
     <input type="text" id="service">  
 
-    <label>預 約 時 間 (三 十 分 鐘 為 一 個 單 位)</label>
-    <select id="time-select">
-        <option value="">請選擇時間</option>
-    </select>
+    <label>預 約 時 間  (三 十 分 鐘 為 一 個 單 位)</label>
+    <div class="datetime-wrapper">
+        <input type="time" id="time" step="1800"> <!-- 30分鐘為單位 -->
+    </div>
 
     <label>備 註</label>
     <textarea id="remarks" rows="3"></textarea>
 
     <button onclick="submitReservation()">提交</button>
 
-    <script>
-        const holidayDates = {
-            "Michelle": ["2/1", "2/2", "2/3", "2/4", "2/5", "2/6", "2/7", "2/8", "2/9", "2/12", "2/19", "2/20", "2/26"],
-            "Mia": ["2/1", "2/2", "2/13", "2/14", "2/15", "2/21", "2/26", "2/27"],
-            "不指定設計師": ["2/1", "2/2", "2/26"]
-        };
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("datetime").value = "";  // 清空時間輸入框
+    });
 
-        // 設定可選的時間（從9:00到17:00，每30分鐘一個單位）
-        function setAvailableTimes() {
-            const timeSelect = document.getElementById("time-select");
-            const startTime = 9; // 開始時間 9:00
-            const endTime = 17; // 結束時間 17:00
-            for (let hour = startTime; hour < endTime; hour++) {
-                for (let minute = 0; minute < 60; minute += 30) {
-                    let time = `${hour < 10 ? '0' + hour : hour}:${minute === 0 ? '00' : '30'}`;
-                    const option = document.createElement("option");
-                    option.value = time;
-                    option.textContent = time;
-                    timeSelect.appendChild(option);
-                }
-            }
-        }
+    let holidays = {
+        "Michelle": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "12", "19", "20", "26"],
+        "Mia": ["1", "2", "13", "14", "15", "21", "26", "27"],
+        "不指定設計師": ["1", "2", "26"]
+    };
 
-        // 根據選擇的設計師更新休假日期
-        document.getElementById("stylist").addEventListener("change", function() {
-            const stylist = this.value;
-            const selectedDate = document.getElementById("datetime").value;
-            const selectedDay = selectedDate ? selectedDate.split("T")[0].split("-").slice(1).join("/") : null;
-            updateCalendar(stylist, selectedDay);
+    document.getElementById("stylist").addEventListener("change", function(event) {
+        const selectedStylist = event.target.value;
+        updateHolidayDates(selectedStylist);
+    });
+
+    function updateHolidayDates(stylist) {
+        const dateInputs = document.querySelectorAll('.datetime-wrapper input[type="time"]');
+
+        // 清除所有圓圈
+        document.querySelectorAll('.circle').forEach(circle => circle.remove());
+
+        holidays[stylist]?.forEach(date => {
+            // 顯示紅色圓圈
+            let circle = document.createElement('div');
+            circle.classList.add('circle');
+            document.querySelector(`#datetime`).appendChild(circle);
         });
+    }
 
-        // 更新日曆，標註休假日期
-        function updateCalendar(stylist, selectedDay) {
-            const holidays = holidayDates[stylist] || [];
-            flatpickr("#datetime", {
-                dateFormat: "m/d",
-                disable: holidays.map(date => date),
-                onDayCreate: function(dObj, dStr, fp, dayElem) {
-                    if (holidays.includes(dStr)) {
-                        dayElem.style.backgroundColor = "red"; // 標註為紅色
-                    }
-                }
-            });
+    async function submitReservation() {
+        await liff.init({ liffId: "2006867121-OlgLV60n" });
+
+        if (!liff.isLoggedIn()) {
+            liff.login();
+            return; // 如果沒登入，則停止後續操作
         }
 
-        function submitReservation() {
-            const stylist = document.getElementById("stylist").value;
-            const name = document.getElementById("name").value;
-            const phone = document.getElementById("phone").value;
-            const service = document.getElementById("service").value;
-            const datetime = document.getElementById("datetime").value;
-            const remarks = document.getElementById("remarks").value;
+        const stylist = document.getElementById("stylist").value;
+        const name = document.getElementById("name").value;
+        const phone = document.getElementById("phone").value;
+        const service = document.getElementById("service").value;
+        const time = document.getElementById("time").value;
+        const remarks = document.getElementById("remarks").value;
 
-            if (!stylist || !name || !phone || !service || !datetime) {
-                alert("有欄位未填寫");
-                return;
-            }
-
-            const [date, time] = datetime.split("T");
-            const formattedDate = date.split("-").slice(1).join("/");  // 轉換日期格式為 MM/DD
-            const finalDateTime = `${formattedDate} [${time}]`;
-
-            const message = `這是您的預約表格\n[待稍候會幫您確認]\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalDateTime}\n\n備註：\n${remarks}`;
-
-            liff.sendMessages([{ type: "text", text: message }])
-                .then(() => {
-                    liff.closeWindow();
-                })
-                .catch(err => console.error("發送訊息錯誤", err));
+        if (!stylist || !name || !phone || !service || !time) {
+            alert("有欄位未填寫");
+            return;
         }
 
-        // 初始化時間選擇器
-        document.addEventListener("DOMContentLoaded", function() {
-            setAvailableTimes(); // 設定可選的時間
-        });
-    </script>
+        const finalTime = time;
+
+        const message = 這是您的預約表格\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks};
+
+        liff.sendMessages([{ type: "text", text: message }])
+            .then(() => {
+                liff.closeWindow();
+            })
+            .catch(err => console.error("發送訊息錯誤", err));
+    }
+</script>
+
 </body>
 </html>
