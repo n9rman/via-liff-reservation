@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>via hair salon</title>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
 
     <style>
@@ -33,6 +34,21 @@
             box-sizing: border-box;
             display: block;
         }
+
+        .datetime-wrapper {
+            width: 100%;
+            display: block;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
         button {
             width: 100%;
             padding: 10px;
@@ -44,14 +60,24 @@
             cursor: pointer;
             margin-top: 15px;
         }
+
         button:hover {
             background-color: #555 !important;
         }
+
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* 提示警告的樣式 */
         .warning-message {
             color: red;
             font-size: 14px;
-            display: none; /* 初始隱藏警告訊息 */
+            display: none;
         }
+
+        /* 顯示休假日的樣式 */
         .disabled-date {
             background-color: #f8d7da !important;
             color: #721c24 !important;
@@ -71,7 +97,7 @@
     <div class="image-container">
         <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
     </div>
-
+    
     <label>設 計 師</label>
     <select id="stylist">
         <option value="" selected>請選擇設計師</option>
@@ -114,10 +140,10 @@
         // 初始化 flatpickr
         const datepicker = flatpickr("#datepicker", {
             dateFormat: "Y-m-d",
-            disable: [],  // 初始禁用日期為空
+            disable: [],  // 初始化禁用日期為空
             minDate: "today",  // 禁止選擇今天以前的日期
             onChange: function(selectedDates) {
-                checkAvailability(selectedDates[0]);  // 當日期更改時檢查是否休假
+                checkAvailability(selectedDates[0]);
             },
             onDayCreate: function(dObj, dStr, fp, dayElem) {
                 const selectedDate = dayElem.dateObj.toISOString().split('T')[0];
@@ -127,11 +153,10 @@
                 // 顯示紅色圓圈標註休假日
                 if (disabledDates.includes(selectedDate)) {
                     dayElem.classList.add("disabled-date");
-                    
+
                     // 點擊紅色圓圈後顯示休假日提示
                     dayElem.addEventListener("click", function() {
                         document.getElementById("warning-message").style.display = 'block';  // 顯示警告訊息
-                        document.getElementById("warning-message").innerText = `這天是休假日：${selectedDate}`;  // 顯示具體休假日訊息
                     });
                 }
             }
@@ -141,31 +166,29 @@
         document.getElementById("stylist").addEventListener("change", function() {
             const stylist = this.value;
             const disabledDates = vacationData[stylist] || [];
-            datepicker.set("disable", disabledDates);  // 設定禁用日期
-            document.getElementById("warning-message").style.display = 'none';  // 隱藏警告訊息
+            datepicker.set("disable", disabledDates);  // 禁用選擇的休假日期
+            document.getElementById("warning-message").style.display = 'none';  // 清除警告訊息
         });
 
-        // 檢查所選日期是否為休假日
         function checkAvailability(selectedDate) {
             const stylist = document.getElementById("stylist").value;
             const disabledDates = vacationData[stylist] || [];
-
-            // 如果所選日期為休假日，顯示警告訊息
+            
             if (disabledDates.includes(selectedDate.toISOString().split('T')[0])) {
-                document.getElementById("warning-message").style.display = 'block';  // 顯示警告訊息
-                document.getElementById("warning-message").innerText = `這天是休假日：${selectedDate.toISOString().split('T')[0]}`;
-                datepicker.clear();  // 清空選擇的日期
+                document.getElementById("warning-message").style.display = 'block';
+                datepicker.clear();  // 清空日期選擇
             } else {
-                document.getElementById("warning-message").style.display = 'none';  // 隱藏警告訊息
+                document.getElementById("warning-message").style.display = 'none';
             }
         }
     });
 
-    // 提交預約資料
     async function submitReservation() {
-        await liff.init({ liffId: "2006867121-OlgLV60n" });  // 初始化 LINE LIFF
+        // 初始化 LIFF
+        await liff.init({ liffId: "2006867121-OlgLV60n" });
+
         if (!liff.isLoggedIn()) {
-            liff.login();  // 如果用戶尚未登入，則跳轉到登入頁面
+            liff.login();
         }
 
         const stylist = document.getElementById("stylist").value;
@@ -175,17 +198,10 @@
         const date = document.getElementById("datepicker").value;
         const remarks = document.getElementById("remarks").value;
 
-        // 檢查表單是否完整
+        // 檢查是否填寫所有欄位
         if (!stylist || !name || !phone || !service || !date) {
-            alert("有欄位未填寫");  // 提醒用戶有未填寫的欄位
+            alert("有欄位未填寫");
             return;
         }
 
-        console.log("預約日期：", date);
-
-        // 格式化預約訊息
-        const message = `這是您的預約表格\n[待稍候會幫您確認]\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date}\n備註：${remarks}`;
-
-        // 使用 LIFF 來傳送訊息
-        await liff.sendMessages([{
-            type: "text
+        const message = `這是您的
