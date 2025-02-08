@@ -155,7 +155,8 @@
                     
                     // 點擊紅色圓圈後顯示休假日提示
                     dayElem.addEventListener("click", function() {
-                        alert("您選擇的日期是休假日！");
+                        document.getElementById("warning-message").style.display = 'block';
+                        document.getElementById("warning-message").innerText = "您選擇的日期是休假日，請選擇其他日期！";
                     });
                 }
             }
@@ -202,15 +203,4 @@
 
         console.log("預約日期：", date);
 
-        const message = `這是您的預約表格\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date}\n\n備註：\n${remarks}`;
-
-        liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {
-                liff.closeWindow();
-            })
-            .catch((err) => console.error("發送訊息錯誤", err));
-    }
-</script>
-
-</body>
-</html>
+        const message = `這是您的預約表格\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約
