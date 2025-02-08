@@ -101,10 +101,24 @@
     <label>服 務 項 目</label>
     <input type="text" id="service">  
 
-    <label>預 約 時 間  (三 十 分 鐘 為 一 個 單 位)</label>
+    <label>預 約 時 間</label>
     <div class="datetime-wrapper">
-        <input id="datetime" type="text">
+        <!-- 使用Flatpickr日期選擇器 -->
+        <input id="datetime" type="text" placeholder="選擇日期">
     </div>
+
+    <label>選擇時間</label>
+    <select id="time-slot">
+        <!-- 使用30分鐘為單位的時間選項 -->
+        <option value="12:00">12:00</option>
+        <option value="12:30">12:30</option>
+        <option value="13:00">13:00</option>
+        <option value="13:30">13:30</option>
+        <option value="14:00">14:00</option>
+        <option value="14:30">14:30</option>
+        <option value="15:00">15:00</option>
+        <option value="15:30">15:30</option>
+    </select>
 
     <label>備 註</label>
     <textarea id="remarks" rows="3"></textarea>
@@ -125,9 +139,8 @@
 
     document.addEventListener("DOMContentLoaded", function() {
         flatpickr("#datetime", {
-            enableTime: true,
-            dateFormat: "m/d H:i",  // 只顯示月份、日期和時間
-            minuteIncrement: 30,   // 每 30 分鐘為一單位
+            enableTime: false,
+            dateFormat: "m/d",  // 只顯示月份和日期
             disableMobile: true,
             onReady: function(selectedDates, dateStr, instance) {
                 addHolidayCircles(instance);
@@ -141,10 +154,11 @@
     function addHolidayCircles(instance) {
         const selectedStylist = document.getElementById("stylist").value;
         const holidays = holidayDates[selectedStylist] || holidayDates["不指定設計師"];
-
+        
         holidays.forEach(day => {
             const dateStr = `02/${day}`;
             const dayElem = instance.calendarContainer.querySelector(`[aria-label='${dateStr}']`);
+            
             if (dayElem) {
                 dayElem.style.border = "2px solid red";
                 dayElem.style.borderRadius = "50%";
@@ -171,15 +185,16 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const datetime = document.getElementById("datetime").value;
+        const date = document.getElementById("datetime").value;
+        const time = document.getElementById("time-slot").value;
         const remarks = document.getElementById("remarks").value;
 
-        if (!stylist || !name || !phone || !service || !datetime) {
+        if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
             return;
         }
 
-        const message = `這是您的預約表格\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${datetime}\n備註：${remarks}`;
+        const message = `這是您的預約表格\n\n設計師：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約日期：${date}\n預約時間：${time}\n備註：${remarks}`;
 
         await liff.init({ liffId: "2006867121-OlgLV60n" });
         if (!liff.isLoggedIn()) {
