@@ -106,8 +106,6 @@
 
     <button onclick="submitReservation()">提交</button>
 
-
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("datetime").value = "";
@@ -117,6 +115,36 @@
     document.getElementById("stylist").addEventListener("mousedown", function(event) {
         event.preventDefault(); // 阻止選擇時的焦點變動
         this.focus();  // 保持 select 元素的焦點
+    });
+
+    // 設計師的休假日期設定
+    const vacationData = {
+        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
+        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09", "2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
+        "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
+    };
+
+    // 動態禁用日期
+    document.getElementById("stylist").addEventListener("change", function() {
+        const stylist = this.value;
+        const datePicker = document.getElementById("datetime");
+
+        // 清除所有禁用的日期
+        datePicker.setAttribute('min', null); // 清除日期最小值
+        datePicker.setAttribute('max', null); // 清除日期最大值
+
+        // 根據選擇的設計師來禁用對應的休假日期
+        if (vacationData[stylist]) {
+            const disabledDates = vacationData[stylist];
+            datePicker.setAttribute('min', '2025-02-01T00:00'); // 可以自定義一個合理的起始時間
+
+            // 禁用每個休假日期
+            for (let date of disabledDates) {
+                let formattedDate = date + "T00:00"; // 設置為日期的00:00
+                let option = new Option(formattedDate, formattedDate);
+                datePicker.setAttribute('disabled', true); 
+            }
+        }
     });
 
     async function submitReservation() {
