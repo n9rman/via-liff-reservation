@@ -42,16 +42,32 @@
         }
         button:hover { background-color: #555; }
         .image-container { text-align: center; margin-top: 20px; }
-        /* 高亮顯示的紅色圓圈 */
-        .highlighted-date {
+        
+        /* 自訂警告視窗樣式 */
+        .alert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            text-align: center;
+        }
+        .alert button {
+            margin-top: 10px;
             background-color: red;
             color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: inline-block;
-            text-align: center;
-            line-height: 20px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .alert button:hover {
+            background-color: darkred;
         }
     </style>
 </head>
@@ -87,6 +103,12 @@
     <textarea id="remarks" rows="3"></textarea>
 
     <button onclick="submitReservation()">提交</button>
+
+    <!-- 自訂警告視窗 -->
+    <div id="alertBox" class="alert">
+        <p>這天為休假日</p>
+        <button onclick="closeAlert()">關閉</button>
+    </div>
 
 <script>
     // 設定每位設計師的休假日期
@@ -146,9 +168,21 @@
 
         // 檢查選擇的日期是否是休假日
         if (holidayDates.includes(day)) {
-            alert("這天為休假日");  // 顯示警告
+            showAlert();  // 顯示自訂警告視窗
         }
     });
+
+    // 顯示自訂警告視窗
+    function showAlert() {
+        const alertBox = document.getElementById("alertBox");
+        alertBox.style.display = "block";
+    }
+
+    // 關閉自訂警告視窗
+    function closeAlert() {
+        const alertBox = document.getElementById("alertBox");
+        alertBox.style.display = "none";
+    }
 </script>
 
 </body>
