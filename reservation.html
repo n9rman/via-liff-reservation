@@ -72,6 +72,9 @@
         <option value="">請選擇時間</option>
     </select>
 
+    <label>預 約 日期</label>
+    <input type="text" id="datetime" readonly>
+
     <label>備 註</label>
     <textarea id="remarks" rows="3"></textarea>
 
@@ -104,7 +107,7 @@
         document.getElementById("stylist").addEventListener("change", function() {
             const stylist = this.value;
             const selectedDate = document.getElementById("datetime").value;
-            const selectedDay = selectedDate ? selectedDate.split("T")[0].split("-").slice(1).join("/") : null;
+            const selectedDay = selectedDate ? selectedDate.split("-").slice(1).join("/") : null;
             updateCalendar(stylist, selectedDay);
         });
 
@@ -151,6 +154,7 @@
         // 初始化時間選擇器
         document.addEventListener("DOMContentLoaded", function() {
             setAvailableTimes(); // 設定可選的時間
+            updateCalendar('Michelle', ''); // 初始化並更新設計師休假日期
         });
     </script>
 </body>
