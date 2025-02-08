@@ -175,6 +175,7 @@
         const date = document.getElementById("datepicker").value;
         const remarks = document.getElementById("remarks").value;
 
+        // 檢查表單是否完整
         if (!stylist || !name || !phone || !service || !date) {
             alert("有欄位未填寫");  // 提醒用戶有未填寫的欄位
             return;
@@ -187,10 +188,4 @@
 
         // 使用 LIFF 來傳送訊息
         await liff.sendMessages([{
-            type: "text",
-            text: message
-        }]);
-    }
-</script>
-</body>
-</html>
+            type: "text
