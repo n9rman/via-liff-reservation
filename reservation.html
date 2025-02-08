@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>via hair salon</title>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> <!-- 引入 flatpickr -->
+    <!-- 引入 flatpickr 插件：用來客製化日期選擇器 -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- 引入 LIFF SDK，這是 LINE 平台用來發送訊息的工具 -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
     <style>
+        /* 整體樣式設置 */
         body {
             font-family: 'Noto Serif TC', serif;
             max-width: 400px;
@@ -87,10 +90,12 @@
     <div class="datetime-wrapper">
         <div>
             <label for="date">選擇日期</label>
-            <input type="text" id="date">
+            <!-- 使用 flatpickr 插件初始化日期選擇器 -->
+            <input type="text" id="date"> <!-- 注意，這裡不再是 <input type="date">，而是使用 <input type="text"> -->
         </div>
 
         <div class="time-select-wrapper">
+            <label for="time">選擇時間</label>
             <input type="time" id="time" step="1800"> <!-- 每30分鐘為一單位 -->
         </div>
     </div>
@@ -108,12 +113,13 @@
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
+    // 監聽設計師選擇改變，更新可選擇的休假日期
     document.getElementById("stylist").addEventListener("change", function(event) {
         const selectedStylist = event.target.value;
         updateHolidayDates(selectedStylist);
     });
 
-    // 更新休假日期紅色圈圈
+    // 更新休假日期，並設置紅色圓圈
     function updateHolidayDates(stylist) {
         const disabledDates = holidays[stylist] || [];
 
@@ -136,6 +142,7 @@
     // 設置時間選擇器，每30分鐘為單位
     document.getElementById("time").setAttribute("step", "1800"); // 每30分鐘為一單位
 
+    // 提交預約
     async function submitReservation() {
         await liff.init({ liffId: "2006867121-OlgLV60n" });
 
