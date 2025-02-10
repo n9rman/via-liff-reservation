@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>via 預約表單</title>
+    <title>𝑣𝑖𝑎 ℎ𝑎𝑖𝑟 𝑠𝑎𝑙𝑜𝑛</title>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
@@ -97,7 +97,7 @@
 <body>
     <h2>via 預約表單</h2>
 
-    <label for="stylist">設計師</label>
+    <label for="stylist">設 計 師</label>
     <select id="stylist">
         <option value="" selected>請選擇設計師</option>
         <option value="Michelle">Michelle</option>
@@ -105,29 +105,29 @@
         <option value="不指定設計師">不指定設計師</option>
     </select>
 
-    <label for="date">預約日期</label>
+    <label for="date">預 約 日 期</label>
     <div class="calendar-container">
         <div id="calendar" class="calendar"></div>
         <input type="hidden" id="selectedDate">
     </div>
     
-    <label for="time">預約時間</label>
+    <label for="time">預 約 時 間</label>
     <div class="time-select-container">
         <select id="time" class="time-select">
             <!-- 時間選擇選項將在 JavaScript 生成 -->
         </select>
     </div>
 
-    <label for="name">您的姓名</label>
+    <label for="name">您 的 姓 名</label>
     <input type="text" id="name" placeholder="">
 
-    <label for="phone">您的電話</label>
+    <label for="phone">您 的 電 話</label>
     <input type="text" id="phone" placeholder="">
 
-    <label for="service">服務項目</label>
+    <label for="service">服 務 項 目</label>
     <input type="text" id="service" placeholder="">
 
-    <label for="remarks">備註</label>
+    <label for="remarks">備 註</label>
     <textarea id="remarks" rows="2" placeholder=""></textarea>
 
     <button onclick="submitReservation()">確認送出</button>
@@ -259,7 +259,7 @@
         // 最終預約時間格式
         const finalTime = `${finalFormattedDate} ${time}`;
 
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+        const message = `[這是您的預約表單]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
