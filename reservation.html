@@ -93,7 +93,7 @@
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
-    // 當選擇設計師時，更新日期選擇器
+    // 監聽設計師選擇，更新日期選擇器
     document.getElementById("stylist").addEventListener("change", function(event) {
         const selectedStylist = event.target.value;
         const disabledDates = holidays[selectedStylist] || [];
@@ -105,23 +105,23 @@
         const selectedStylist = document.getElementById("stylist").value;
         if (!selectedStylist) {
             alert("請先填選設計師欄位");
-            event.preventDefault(); // 阻止事件傳播
-            return;
+            event.preventDefault(); // 阻止點擊事件
         }
     });
 
-    // 初始化日期選擇器
+    // 初始化日期選擇器，最早日期為今天
     function initDatePicker(disabledDates = []) {
         flatpickr("#date", {
             dateFormat: "Y-m-d",
             disable: disabledDates,
+            minDate: "today",  // 限制可選擇的最早日期為當天
             onChange: function(selectedDates, dateStr) {
                 updateTimeOptions(dateStr);
             }
         });
     }
 
-    // 生成 30 分鐘間隔的時間選項
+    // 根據日期生成 30 分鐘間隔的時間選項
     function updateTimeOptions(date) {
         const timeSelect = document.getElementById("time");
         timeSelect.innerHTML = ""; // 清空選項
@@ -172,12 +172,10 @@
 
         const finalTime = `${date} ${time}`;
 
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+        const message = `您的預約表單\n\n設計師: ${stylist}\n姓名: ${name}\n電話: ${phone}\n服務項目: ${service}\n預約時間: ${finalTime}\n備註:\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {
-                liff.closeWindow();
-            })
+            .then(() => liff.closeWindow())
             .catch(err => console.error("發送訊息錯誤", err));
     }
 </script>
