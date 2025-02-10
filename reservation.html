@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>via hair salon</title>
-    <!-- 引入 flatpickr 插件：用來客製化日期選擇器 -->
+    
+    <!-- 引入 flatpickr 插件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <!-- 引入 LIFF SDK，這是 LINE 平台用來發送訊息的工具 -->
+    
+    <!-- 引入 LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Noto Serif TC', serif;
@@ -45,15 +50,6 @@
         }
         button:hover { background-color: #555; }
         .image-container { text-align: center; margin-top: 20px; }
-        .circle {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: red;
-        }
     </style>
 </head>
 <body>
@@ -79,16 +75,8 @@
     <label>服 務 項 目</label>
     <input type="text" id="service">  
 
-    <label>預 約 時 間  (三 十 分 鐘 為 一 個 單 位)</label>
-    <div class="datetime-wrapper">
-        <label for="date">選擇日期</label>
-        <!-- 使用 flatpickr 插件初始化日期選擇器 -->
-        <input type="text" id="date"> <!-- 注意，這裡不再是 <input type="date">，而是使用 <input type="text"> -->
-        
-        <label for="time">選擇時間</label>
-        <!-- 設置時間選擇器，每30分鐘為單位 -->
-        <input type="time" id="time" step="1800"> <!-- 每30分鐘為一單位 -->
-    </div>
+    <label>預 約 時 間 (三 十 分 鐘 為 一 個 單 位)</label>
+    <input type="text" id="datetime" placeholder="請選擇日期與時間">
 
     <label>備 註</label>
     <textarea id="remarks" rows="3"></textarea>
@@ -96,41 +84,45 @@
     <button onclick="submitReservation()">提交</button>
 
 <script>
-    // 設計師的休假日期，這些日期將會被標註為紅色圓圈
+    // 設計師的休假日期
     const holidays = {
-        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09", "2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
-        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
+        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-12", "2025-02-19", "2025-02-26"],
+        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-21", "2025-02-26"],
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
-    // 監聽設計師選擇改變，更新可選擇的休假日期
-    document.getElementById("stylist").addEventListener("change", function(event) {
-        const selectedStylist = event.target.value;
-        updateHolidayDates(selectedStylist);
-    });
-
-    // 更新休假日期，並設置紅色圓圈
-    function updateHolidayDates(stylist) {
-        const disabledDates = holidays[stylist] || [];
-
-        // 使用 flatpickr 插件初始化日期選擇器
-        flatpickr("#date", {
-            disable: disabledDates, // 禁用休假日期
-            dateFormat: "Y-m-d", // 設置日期格式
-            onChange: function(selectedDates, dateStr, instance) {
-                // 在選擇日期後，判斷是否為休假日
-                if (disabledDates.includes(dateStr)) {
-                    alert("這天為休假日");
-                }
-            },
+    // 設置 flatpickr 日期與時間選擇器
+    function initDateTimePicker(disabledDates = []) {
+        flatpickr("#datetime", {
+            enableTime: true,             // 啟用時間選擇
+            dateFormat: "Y-m-d H:i",      // 日期與時間格式
+            time_24hr: true,              // 24 小時制
+            minuteIncrement: 30,          // 30 分鐘間隔
+            defaultHour: 9,               // 預設從 09:00 開始
+            minTime: "09:00",             // 最早可選 09:00
+            maxTime: "17:00",             // 最晚可選 17:00
+            disable: disabledDates,       // 禁用設計師休假日
             locale: {
-                firstDayOfWeek: 1 // 設置每週的第一天是星期一
+                firstDayOfWeek: 1         // 設定星期一為一週的開始
+            },
+            onChange: function(selectedDates, dateStr, instance) {
+                const selectedDate = dateStr.split(" ")[0];
+                if (disabledDates.includes(selectedDate)) {
+                    alert("這天為設計師休假日，請選擇其他日期！");
+                }
             }
         });
     }
 
-    // 設置時間選擇器，每30分鐘為單位
-    document.getElementById("time").setAttribute("step", "1800"); // 每30分鐘為一單位
+    // 監聽設計師選擇，更新日期選擇器
+    document.getElementById("stylist").addEventListener("change", function(event) {
+        const selectedStylist = event.target.value;
+        const disabledDates = holidays[selectedStylist] || [];
+        initDateTimePicker(disabledDates);
+    });
+
+    // 預設初始化（未選擇設計師時）
+    initDateTimePicker([]);
 
     // 提交預約
     async function submitReservation() {
@@ -145,18 +137,15 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const date = document.getElementById("date").value;
-        const time = document.getElementById("time").value;
+        const datetime = document.getElementById("datetime").value;
         const remarks = document.getElementById("remarks").value;
 
-        if (!stylist || !name || !phone || !service || !date || !time) {
+        if (!stylist || !name || !phone || !service || !datetime) {
             alert("有欄位未填寫");
             return;
         }
 
-        const finalTime = `${date} ${time}`;
-
-        const message = `這是您的預約表格\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${datetime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
