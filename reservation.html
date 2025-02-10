@@ -223,7 +223,6 @@
     generateCalendar();
     generateTimeOptions();
 
-   
     // 提交預約
     async function submitReservation() {
         await liff.init({ liffId: "2006867121-OlgLV60n" });
@@ -237,7 +236,7 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const date = document.getElementById("date").value;
+        const date = document.getElementById("selectedDate").value; // 修改這裡
         const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
