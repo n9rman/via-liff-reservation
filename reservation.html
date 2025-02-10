@@ -76,6 +76,14 @@
             background-color: #333;
             color: white;
         }
+        .time-select-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .time-select {
+            width: 48%;
+        }
     </style>
 </head>
 <body>
@@ -102,6 +110,13 @@
     <div class="calendar-container">
         <div id="calendar" class="calendar"></div>
         <input type="hidden" id="selectedDate">
+    </div>
+
+    <label for="time">選擇預約時間</label>
+    <div class="time-select-container">
+        <select id="time" class="time-select">
+            <!-- 時間選擇選項將在 JavaScript 生成 -->
+        </select>
     </div>
 
     <label for="remarks">備註</label>
@@ -147,8 +162,29 @@
         });
     }
 
-    // 預設初始化月曆
+    // 生成時間選擇方塊
+    function generateTimeOptions() {
+        const startTime = 9; // 9:00
+        const endTime = 17; // 17:30
+        const timeSelect = document.getElementById("time");
+
+        for (let hour = startTime; hour <= endTime; hour++) {
+            const ampm = hour < 12 ? 'AM' : 'PM';
+            const hour12 = hour % 12 || 12; // 將24小時格式轉換為12小時格式
+            const times = [`${hour12}:00 ${ampm}`, `${hour12}:30 ${ampm}`];
+            
+            times.forEach(time => {
+                const option = document.createElement("option");
+                option.value = time;
+                option.text = time;
+                timeSelect.appendChild(option);
+            });
+        }
+    }
+
+    // 預設初始化月曆和時間選擇
     generateCalendar();
+    generateTimeOptions();
 
     // 提交預約
     async function submitReservation() {
@@ -164,14 +200,15 @@
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
         const date = document.getElementById("selectedDate").value;
+        const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
-        if (!stylist || !name || !phone || !service || !date) {
+        if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
             return;
         }
 
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date}\n\n備註：\n${remarks}`;
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date} ${time}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
