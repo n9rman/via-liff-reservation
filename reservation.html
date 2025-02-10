@@ -5,15 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>via 預約表單</title>
     
-    <!-- 引入 flatpickr 插件 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    
-    <!-- 引入 LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
-    
+
     <style>
         body {
             font-family: 'Noto Serif TC', serif;
@@ -54,9 +49,32 @@
         button:hover {
             background-color: #555;
         }
-        .image-container {
-            text-align: center;
-            margin-top: 20px;
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+        }
+        .calendar div {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .calendar div:hover {
+            background-color: #eee;
+        }
+        .selected {
+            background-color: #333;
+            color: white;
         }
     </style>
 </head>
@@ -81,7 +99,10 @@
     <input type="text" id="service" placeholder="請輸入服務項目">
 
     <label for="date">選擇預約日期</label>
-    <input type="text" id="date" placeholder="請選擇日期">
+    <div class="calendar-container">
+        <div id="calendar" class="calendar"></div>
+        <input type="hidden" id="selectedDate">
+    </div>
 
     <label for="remarks">備註</label>
     <textarea id="remarks" rows="3" placeholder="請輸入備註"></textarea>
@@ -89,51 +110,69 @@
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
-    // 初始化 flatpickr 月曆
-    function initDatePicker() {
-        flatpickr("#date", {
-            dateFormat: "Y-m-d",
-            minDate: "today",  // 設置起點為當天日期
-            locale: "zh", // 設定為中文
-            disable: [], // 如果有特殊日期要禁用，可以在這裡添加
-            onChange: function(selectedDates, dateStr) {
-                console.log("選擇的日期是：" + dateStr);
-            }
+    // 初始化月曆
+    function generateCalendar() {
+        const now = new Date();
+        const month = now.getMonth();
+        const year = now.getFullYear();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        
+        // 清空月曆
+        $('#calendar').empty();
+
+        // 顯示週日到週六
+        const daysOfWeek = ["日", "一", "二", "三", "四", "五", "六"];
+        daysOfWeek.forEach(day => {
+            $('#calendar').append(`<div style="text-align:center; font-weight:bold">${day}</div>`);
+        });
+
+        // 空白填充，確保日期排正確
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            $('#calendar').append('<div></div>');
+        }
+
+        // 填充日期
+        for (let day = 1; day <= daysInMonth; day++) {
+            $('#calendar').append(`<div class="calendar-day" data-day="${day}">${day}</div>`);
+        }
+
+        // 點擊日期選擇
+        $(".calendar-day").on('click', function() {
+            $(".calendar-day").removeClass("selected");
+            $(this).addClass("selected");
+            const selectedDay = $(this).data("day");
+            const selectedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
+            $("#selectedDate").val(selectedDate);
         });
     }
 
-    // 預設初始化日期選擇器
-    initDatePicker();
+    // 預設初始化月曆
+    generateCalendar();
 
     // 提交預約
     async function submitReservation() {
-        // 初始化 LIFF
         await liff.init({ liffId: "2006867121-OlgLV60n" });
 
-        // 檢查是否已經登入
         if (!liff.isLoggedIn()) {
             liff.login();
             return; // 如果沒登入，則停止後續操作
         }
 
-        // 獲取表單資料
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const date = document.getElementById("date").value;
+        const date = document.getElementById("selectedDate").value;
         const remarks = document.getElementById("remarks").value;
 
-        // 檢查表單是否已完整填寫
         if (!stylist || !name || !phone || !service || !date) {
             alert("有欄位未填寫");
             return;
         }
 
-        // 組織訊息
         const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date}\n\n備註：\n${remarks}`;
 
-        // 發送訊息至 LINE@
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
                 liff.closeWindow();
