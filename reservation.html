@@ -23,9 +23,11 @@
 <script>
     // 初始化 LIFF
     document.addEventListener('DOMContentLoaded', function() {
-        liff.init({ liffId: 'your-liff-id' })  // 請替換成正確的 LIFF ID
+        liff.init({ liffId: 'your-liff-id' })  // 替換成正確的 LIFF ID
             .then(() => {
                 console.log('LIFF 初始化成功');
+                // 在這裡檢查 liff 是否存在
+                console.log(liff);  // 應該能顯示 liff 物件
             })
             .catch(err => {
                 console.error('LIFF 初始化失敗', err);
