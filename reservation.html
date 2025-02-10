@@ -75,8 +75,13 @@
     <label>服 務 項 目</label>
     <input type="text" id="service">  
 
-    <label>預 約 時 間 (三 十 分 鐘 為 一 個 單 位)</label>
-    <input type="text" id="datetime" placeholder="請選擇日期與時間">
+    <label>預 約 日 期</label>
+    <input type="text" id="date" placeholder="請選擇日期">
+
+    <label>預 約 時 間</label>
+    <select id="time">
+        <option value="">請先選擇日期</option>
+    </select>
 
     <label>備 註</label>
     <textarea id="remarks" rows="3"></textarea>
@@ -91,38 +96,50 @@
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
-    // 設置 flatpickr 日期與時間選擇器
-    function initDateTimePicker(disabledDates = []) {
-        flatpickr("#datetime", {
-            enableTime: true,             // 啟用時間選擇
-            dateFormat: "Y-m-d H:i",      // 日期與時間格式
-            time_24hr: true,              // 24 小時制
-            minuteIncrement: 30,          // 30 分鐘間隔
-            defaultHour: 9,               // 預設從 09:00 開始
-            minTime: "09:00",             // 最早可選 09:00
-            maxTime: "17:00",             // 最晚可選 17:00
-            disable: disabledDates,       // 禁用設計師休假日
-            locale: {
-                firstDayOfWeek: 1         // 設定星期一為一週的開始
-            },
-            onChange: function(selectedDates, dateStr, instance) {
-                const selectedDate = dateStr.split(" ")[0];
-                if (disabledDates.includes(selectedDate)) {
-                    alert("這天為設計師休假日，請選擇其他日期！");
-                }
-            }
-        });
-    }
-
     // 監聽設計師選擇，更新日期選擇器
     document.getElementById("stylist").addEventListener("change", function(event) {
         const selectedStylist = event.target.value;
         const disabledDates = holidays[selectedStylist] || [];
-        initDateTimePicker(disabledDates);
+        initDatePicker(disabledDates);
     });
 
-    // 預設初始化（未選擇設計師時）
-    initDateTimePicker([]);
+    // 初始化日期選擇器
+    function initDatePicker(disabledDates = []) {
+        flatpickr("#date", {
+            dateFormat: "Y-m-d",
+            disable: disabledDates,
+            onChange: function(selectedDates, dateStr) {
+                updateTimeOptions(dateStr);
+            }
+        });
+    }
+
+    // 根據日期生成 30 分鐘間隔的時間選項
+    function updateTimeOptions(date) {
+        const timeSelect = document.getElementById("time");
+        timeSelect.innerHTML = ""; // 清空選項
+
+        if (!date) {
+            timeSelect.innerHTML = "<option value=''>請先選擇日期</option>";
+            return;
+        }
+
+        // 設置時間範圍 09:00 - 17:00，每 30 分鐘為一個單位
+        const startHour = 9;
+        const endHour = 17;
+        for (let hour = startHour; hour < endHour; hour++) {
+            for (let minute of [0, 30]) {
+                const timeValue = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+                const option = document.createElement("option");
+                option.value = timeValue;
+                option.textContent = timeValue;
+                timeSelect.appendChild(option);
+            }
+        }
+    }
+
+    // 預設初始化
+    initDatePicker([]);
 
     // 提交預約
     async function submitReservation() {
@@ -137,15 +154,18 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const datetime = document.getElementById("datetime").value;
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
-        if (!stylist || !name || !phone || !service || !datetime) {
+        if (!stylist || !name || !phone || !service || !date || !time) {
             alert("有欄位未填寫");
             return;
         }
 
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${datetime}\n\n備註：\n${remarks}`;
+        const finalTime = `${date} ${time}`;
+
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
