@@ -93,11 +93,21 @@
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
-    // 監聽設計師選擇，更新日期選擇器
+    // 當選擇設計師時，更新日期選擇器
     document.getElementById("stylist").addEventListener("change", function(event) {
         const selectedStylist = event.target.value;
         const disabledDates = holidays[selectedStylist] || [];
         initDatePicker(disabledDates);
+    });
+
+    // **防止未選擇設計師時點選日期**
+    document.getElementById("date").addEventListener("click", function(event) {
+        const selectedStylist = document.getElementById("stylist").value;
+        if (!selectedStylist) {
+            alert("請先填選設計師欄位");
+            event.preventDefault(); // 阻止事件傳播
+            return;
+        }
     });
 
     // 初始化日期選擇器
@@ -111,7 +121,7 @@
         });
     }
 
-    // 根據日期生成 30 分鐘間隔的時間選項
+    // 生成 30 分鐘間隔的時間選項
     function updateTimeOptions(date) {
         const timeSelect = document.getElementById("time");
         timeSelect.innerHTML = ""; // 清空選項
@@ -144,7 +154,7 @@
 
         if (!liff.isLoggedIn()) {
             liff.login();
-            return; // 如果沒登入，則停止後續操作
+            return;
         }
 
         const stylist = document.getElementById("stylist").value;
