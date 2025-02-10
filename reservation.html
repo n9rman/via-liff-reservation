@@ -256,34 +256,17 @@
         const day = String(formattedDate.getDate()).padStart(2, '0');  // 获取日期并补零
         const finalFormattedDate = `${month}/${day}`;
 
- const reservationData = {
-        stylist,
-        name,
-        phone,
-        service,
-        date,
-        time,
-        remarks
-    };
+        // 最終預約時間格式
+        const finalTime = `${finalFormattedDate} ${time}`;
 
-    // 送出 POST 請求到後端
-    await fetch('https://asia-east1-flawless-psyche-447909-f3.cloudfunctions.net/linebot2', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(reservationData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('後端回應:', data);
-        alert('預約已送出');
-    })
-    .catch(error => {
-        console.error('錯誤:', error);
-        alert('預約送出失敗');
-    });
-}
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+
+        liff.sendMessages([{ type: "text", text: message }])
+            .then(() => {
+                liff.closeWindow();
+            })
+            .catch(err => console.error("發送訊息錯誤", err));
+    }
 </script>
 
 </body>
