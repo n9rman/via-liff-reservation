@@ -51,9 +51,14 @@
         button:hover { background-color: #555; }
         .image-container { text-align: center; margin-top: 20px; }
 
-        /* 隱藏原生日期選擇 UI */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            display: none;
+        /* 強制隱藏所有瀏覽器的原生日期選擇器 */
+        input[type="date"]::-webkit-calendar-picker-indicator,
+        input[type="date"]::-moz-calendar-picker-indicator,
+        input[type="date"]::-ms-calendar-picker-indicator {
+            display: none !important;
+        }
+        input[type="date"] {
+            cursor: pointer;
         }
     </style>
 </head>
@@ -78,7 +83,7 @@
     <input type="text" id="service">  
 
     <label>預 約 日 期</label>
-    <!-- 改成 type="text" -->
+    <!-- 使用 type="text" -->
     <input type="text" id="date" placeholder="請選擇日期">
 
     <label>預 約 時 間</label>
@@ -92,48 +97,50 @@
     <button onclick="submitReservation()">提交</button>
 
 <script>
-    // 設計師的休假日期
-    const holidays = {
-        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03","2025-02-04","2025-02-05","2025-02-06","2025-02-07","2025-02-08","2025-02-09","2025-02-12","2025-02-19","2025-02-20", "2025-02-26"],
-        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14","2025-02-15", "2025-02-21", "2025-02-26","2025-02-27"],
-        "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
-    };
+    document.addEventListener('DOMContentLoaded', function() {
+        // 設計師的休假日期
+        const holidays = {
+            "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03","2025-02-04","2025-02-05","2025-02-06","2025-02-07","2025-02-08","2025-02-09","2025-02-12","2025-02-19","2025-02-20", "2025-02-26"],
+            "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14","2025-02-15", "2025-02-21", "2025-02-26","2025-02-27"],
+            "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
+        };
 
-    // 監聽設計師選擇，更新日期選擇器
-    document.getElementById("stylist").addEventListener("change", function(event) {
-        const selectedStylist = event.target.value;
-        const disabledDates = holidays[selectedStylist] || [];
-        initDatePicker(disabledDates);
-    });
+        // 監聽設計師選擇，更新日期選擇器
+        document.getElementById("stylist").addEventListener("change", function(event) {
+            const selectedStylist = event.target.value;
+            const disabledDates = holidays[selectedStylist] || [];
+            initDatePicker(disabledDates);
+        });
 
-    // **防止未選擇設計師時點選日期**
-    document.getElementById("date").addEventListener("click", function(event) {
-        const selectedStylist = document.getElementById("stylist").value;
-        if (!selectedStylist) {
-            alert("請先填選設計師欄位");
-            event.preventDefault(); // 阻止點擊事件
-        }
-    });
-
-    // **阻止原生日期選擇器彈出**
-    document.getElementById("date").addEventListener("focus", function(event) {
-        event.preventDefault();
-    });
-
-    // 初始化日期選擇器，最早日期為今天
-    function initDatePicker(disabledDates = []) {
-        flatpickr("#date", {
-            dateFormat: "Y-m-d",
-            disable: disabledDates,
-            minDate: "today",  // 限制可選擇的最早日期為當天
-            onChange: function(selectedDates, dateStr) {
-                updateTimeOptions(dateStr);
+        // **防止未選擇設計師時點選日期**
+        document.getElementById("date").addEventListener("click", function(event) {
+            const selectedStylist = document.getElementById("stylist").value;
+            if (!selectedStylist) {
+                alert("請先填選設計師欄位");
+                event.preventDefault(); // 阻止點擊事件
             }
         });
-    }
 
-    // 預設初始化
-    initDatePicker([]);
+        // **阻止原生日期選擇器彈出**
+        document.getElementById("date").addEventListener("focus", function(event) {
+            event.preventDefault();
+        });
+
+        // 初始化日期選擇器，最早日期為今天
+        function initDatePicker(disabledDates = []) {
+            flatpickr("#date", {
+                dateFormat: "Y-m-d",
+                disable: disabledDates,
+                minDate: "today",  // 限制可選擇的最早日期為當天
+                onChange: function(selectedDates, dateStr) {
+                    updateTimeOptions(dateStr);
+                }
+            });
+        }
+
+        // 預設初始化
+        initDatePicker([]);
+    });
 
     // 提交預約
     async function submitReservation() {
