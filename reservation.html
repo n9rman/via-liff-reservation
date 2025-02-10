@@ -3,17 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>via hair salon</title>
+    <title>via 預約表單</title>
     
-    <!-- 引入 flatpickr 插件 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    
-    <!-- 引入 LIFF SDK -->
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
-    
+
     <style>
         body {
             font-family: 'Noto Serif TC', serif;
@@ -22,7 +17,10 @@
             padding: 20px;
             background-color: #f9f9f9;
         }
-        h2 { text-align: center; color: #333; }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
         label {
             display: block;
             margin-top: 10px;
@@ -48,14 +46,55 @@
             cursor: pointer;
             margin-top: 15px;
         }
-        button:hover { background-color: #555; }
-        .image-container { text-align: center; margin-top: 20px; }
+        button:hover {
+            background-color: #555;
+        }
+        .calendar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 15px;
+        }
+        .calendar div {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .calendar div:hover {
+            background-color: #eee;
+        }
+        .selected {
+            background-color: #333;
+            color: white;
+        }
+        .disabled {
+            pointer-events: none;
+            background-color: #f0f0f0;
+            color: #ccc;
+        }
+        .time-select-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        .time-select {
+            width: 48%;
+        }
     </style>
 </head>
 <body>
-    <h2>via 預 約 表 單</h2>
+    <h2>via 預約表單</h2>
 
-    <label>設 計 師</label>
+    <label for="stylist">設計師</label>
     <select id="stylist">
         <option value="" selected>請選擇設計師</option>
         <option value="Michelle">Michelle</option>
@@ -63,80 +102,126 @@
         <option value="不指定設計師">不指定設計師</option>
     </select>
 
-    <label>您 的 姓 名</label>
-    <input type="text" id="name">
+    <label for="date">預約日期</label>
+    <div class="calendar-container">
+        <div id="calendar" class="calendar"></div>
+        <input type="hidden" id="selectedDate">
+    </div>
+    
+    <label for="time">預約時間</label>
+    <div class="time-select-container">
+        <select id="time" class="time-select">
+            <!-- 時間選擇選項將在 JavaScript 生成 -->
+        </select>
+    </div>
 
-    <label>您 的 電 話</label>
-    <input type="text" id="phone">
+    <label for="name">您的姓名</label>
+    <input type="text" id="name" placeholder="">
 
-    <label>服 務 項 目</label>
-    <input type="text" id="service">  
+    <label for="phone">您的電話</label>
+    <input type="text" id="phone" placeholder="">
 
-    <label>預 約 日 期</label>
-    <input type="text" id="date" placeholder="請選擇日期">
+    <label for="service">服務項目</label>
+    <input type="text" id="service" placeholder="">
 
-    <label>預 約 時 間</label>
-    <select id="time">
-        <option value="">請先選擇日期</option>
-    </select>
+    <label for="remarks">備註</label>
+    <textarea id="remarks" rows="2" placeholder=""></textarea>
 
-    <label>備 註</label>
-    <textarea id="remarks" rows="3"></textarea>
-
-    <button onclick="submitReservation()">提交</button>
+    <button onclick="submitReservation()">確認送出</button>
 
 <script>
     // 設計師的休假日期
     const holidays = {
-        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-12", "2025-02-19", "2025-02-26"],
-        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-21", "2025-02-26"],
+        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
+        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
-    // 監聽設計師選擇，更新日期選擇器
-    document.getElementById("stylist").addEventListener("change", function(event) {
-        const selectedStylist = event.target.value;
-        const disabledDates = holidays[selectedStylist] || [];
-        initDatePicker(disabledDates);
-    });
+    // 初始化月曆
+    function generateCalendar() {
+        const now = new Date();
+        const month = now.getMonth();
+        const year = now.getFullYear();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const firstDayOfMonth = new Date(year, month, 1).getDay();
+        const today = new Date();  // 當天的日期
+        const selectedStylist = document.getElementById("stylist").value;
 
-    // 初始化日期選擇器
-    function initDatePicker(disabledDates = []) {
-        flatpickr("#date", {
-            dateFormat: "Y-m-d",
-            disable: disabledDates,
-            onChange: function(selectedDates, dateStr) {
-                updateTimeOptions(dateStr);
+        // 清空月曆
+        $('#calendar').empty();
+
+        // 顯示週日到週六
+        const daysOfWeek = ["日", "一", "二", "三", "四", "五", "六"];
+        daysOfWeek.forEach(day => {
+            $('#calendar').append(`<div style="text-align:center; font-weight:bold">${day}</div>`);
+        });
+
+        // 空白填充，確保日期排正確
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            $('#calendar').append('<div></div>');
+        }
+
+        // 填充日期並設置禁用過去的日期和休假日期
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const isPastDate = date < today; // 判斷是否是過去的日期
+            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const isHoliday = holidays[selectedStylist] && holidays[selectedStylist].includes(formattedDate);
+            const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day'; // 給過去的日期和休假日期加上禁用樣式
+
+            $('#calendar').append(`<div class="${className}" data-day="${day}" data-date="${formattedDate}">${day}</div>`);
+        }
+
+        // 點擊日期選擇
+        $(".calendar-day").on('click', function() {
+            if (!$(this).hasClass("disabled")) {
+                $(".calendar-day").removeClass("selected");
+                $(this).addClass("selected");
+                const selectedDay = $(this).data("day");
+                const selectedDate = $(this).data("date");
+                $("#selectedDate").val(selectedDate);
             }
+        });
+
+        // 禁用過去的日期和休假日期樣式
+        $(".disabled").css({
+            "pointer-events": "none",
+            "background-color": "#f0f0f0",
+            "color": "#ccc"
         });
     }
 
-    // 根據日期生成 30 分鐘間隔的時間選項
-    function updateTimeOptions(date) {
+    // 生成時間選擇方塊
+    function generateTimeOptions() {
+        const startTime = 9; // 9:00
+        const endTime = 17; // 17:30
         const timeSelect = document.getElementById("time");
-        timeSelect.innerHTML = ""; // 清空選項
 
-        if (!date) {
-            timeSelect.innerHTML = "<option value=''>請先選擇日期</option>";
-            return;
-        }
+        // 清空時間選項
+        timeSelect.innerHTML = "";
 
-        // 設置時間範圍 09:00 - 17:00，每 30 分鐘為一個單位
-        const startHour = 9;
-        const endHour = 17;
-        for (let hour = startHour; hour < endHour; hour++) {
-            for (let minute of [0, 30]) {
-                const timeValue = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+        for (let hour = startTime; hour <= endTime; hour++) {
+            const ampm = hour < 12 ? 'AM' : 'PM';
+            const hour12 = hour % 12 || 12; // 將24小時格式轉換為12小時格式
+            const times = [`${hour12}:00 ${ampm}`, `${hour12}:30 ${ampm}`];
+            
+            times.forEach(time => {
                 const option = document.createElement("option");
-                option.value = timeValue;
-                option.textContent = timeValue;
+                option.value = time;
+                option.text = time;
                 timeSelect.appendChild(option);
-            }
+            });
         }
     }
 
-    // 預設初始化
-    initDatePicker([]);
+    // 設置設計師選擇事件，更新月曆
+    $('#stylist').change(function() {
+        generateCalendar();
+    });
+
+    // 預設初始化月曆和時間選擇
+    generateCalendar();
+    generateTimeOptions();
 
     // 提交預約
     async function submitReservation() {
@@ -151,7 +236,7 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const date = document.getElementById("date").value;
+        const date = document.getElementById("selectedDate").value; // 修改這裡
         const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
