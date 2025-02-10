@@ -200,19 +200,22 @@
         // 清空時間選項
         timeSelect.innerHTML = "";
 
-        for (let hour = startTime; hour <= endTime; hour++) {
-            const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
-            const times = [
-                            `${hour24}:00`,  // 以24小時制顯示
-                            `${hour24}:30`   // 以24小時制顯示
+for (let hour = startTime; hour <= endTime; hour++) {
+    const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
+    const times = [
+        `${hour24}:00`,  // 以24小時制顯示
+        `${hour24}:30`   // 以24小時制顯示
+    ];
             
-            times.forEach(time => {
-                const option = document.createElement("option");
-                option.value = time;
-                option.text = time;
-                timeSelect.appendChild(option);
-            });
-        }
+                
+    times.forEach(time => {
+        const option = document.createElement("option");
+        option.value = time;
+        option.text = time;
+        timeSelect.appendChild(option);
+    });
+}
+        
     }
 
     // 設置設計師選擇事件，更新月曆
