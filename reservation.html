@@ -50,21 +50,14 @@
         }
         button:hover { background-color: #555; }
         .image-container { text-align: center; margin-top: 20px; }
-
-        /* 強制隱藏所有瀏覽器的原生日期選擇器 */
-        input[type="date"]::-webkit-calendar-picker-indicator,
-        input[type="date"]::-moz-calendar-picker-indicator,
-        input[type="date"]::-ms-calendar-picker-indicator {
-            display: none !important;
-        }
-        input[type="date"] {
-            cursor: pointer;
-        }
     </style>
 </head>
 <body>
     <h2>via 預 約 表 單</h2>
-
+    <div class="image-container">
+        <img src="https://raw.githubusercontent.com/n9rman/via-liff-reservation/main/image/222.jpg" alt="預約圖片" width="300">
+    </div>
+    
     <label>設 計 師</label>
     <select id="stylist">
         <option value="" selected>請選擇設計師</option>
@@ -83,7 +76,6 @@
     <input type="text" id="service">  
 
     <label>預 約 日 期</label>
-    <!-- 使用 type="text" -->
     <input type="text" id="date" placeholder="請選擇日期">
 
     <label>預 約 時 間</label>
@@ -97,50 +89,58 @@
     <button onclick="submitReservation()">提交</button>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 設計師的休假日期
-        const holidays = {
-            "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03","2025-02-04","2025-02-05","2025-02-06","2025-02-07","2025-02-08","2025-02-09","2025-02-12","2025-02-19","2025-02-20", "2025-02-26"],
-            "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14","2025-02-15", "2025-02-21", "2025-02-26","2025-02-27"],
-            "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
-        };
+    // 設計師的休假日期
+    const holidays = {
+        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-12", "2025-02-19", "2025-02-26"],
+        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-21", "2025-02-26"],
+        "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
+    };
 
-        // 監聽設計師選擇，更新日期選擇器
-        document.getElementById("stylist").addEventListener("change", function(event) {
-            const selectedStylist = event.target.value;
-            const disabledDates = holidays[selectedStylist] || [];
-            initDatePicker(disabledDates);
-        });
+    // 監聽設計師選擇，更新日期選擇器
+    document.getElementById("stylist").addEventListener("change", function(event) {
+        const selectedStylist = event.target.value;
+        const disabledDates = holidays[selectedStylist] || [];
+        initDatePicker(disabledDates);
+    });
 
-        // **防止未選擇設計師時點選日期**
-        document.getElementById("date").addEventListener("click", function(event) {
-            const selectedStylist = document.getElementById("stylist").value;
-            if (!selectedStylist) {
-                alert("請先填選設計師欄位");
-                event.preventDefault(); // 阻止點擊事件
+    // 初始化日期選擇器
+    function initDatePicker(disabledDates = []) {
+        flatpickr("#date", {
+            dateFormat: "Y-m-d",
+            minDate: "today", // 設置起點為當天日期
+            disable: disabledDates,
+            onChange: function(selectedDates, dateStr) {
+                updateTimeOptions(dateStr);
             }
         });
+    }
 
-        // **阻止原生日期選擇器彈出**
-        document.getElementById("date").addEventListener("focus", function(event) {
-            event.preventDefault();
-        });
+    // 根據日期生成 30 分鐘間隔的時間選項
+    function updateTimeOptions(date) {
+        const timeSelect = document.getElementById("time");
+        timeSelect.innerHTML = ""; // 清空選項
 
-        // 初始化日期選擇器，最早日期為今天
-        function initDatePicker(disabledDates = []) {
-            flatpickr("#date", {
-                dateFormat: "Y-m-d",
-                disable: disabledDates,
-                minDate: "today",  // 限制可選擇的最早日期為當天
-                onChange: function(selectedDates, dateStr) {
-                    updateTimeOptions(dateStr);
-                }
-            });
+        if (!date) {
+            timeSelect.innerHTML = "<option value=''>請先選擇日期</option>";
+            return;
         }
 
-        // 預設初始化
-        initDatePicker([]);
-    });
+        // 設置時間範圍 09:00 - 17:00，每 30 分鐘為一個單位
+        const startHour = 9;
+        const endHour = 17;
+        for (let hour = startHour; hour < endHour; hour++) {
+            for (let minute of [0, 30]) {
+                const timeValue = ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")};
+                const option = document.createElement("option");
+                option.value = timeValue;
+                option.textContent = timeValue;
+                timeSelect.appendChild(option);
+            }
+        }
+    }
+
+    // 預設初始化
+    initDatePicker([]);
 
     // 提交預約
     async function submitReservation() {
@@ -148,7 +148,7 @@
 
         if (!liff.isLoggedIn()) {
             liff.login();
-            return;
+            return; // 如果沒登入，則停止後續操作
         }
 
         const stylist = document.getElementById("stylist").value;
@@ -164,12 +164,14 @@
             return;
         }
 
-        const finalTime = `${date} ${time}`;
+        const finalTime = ${date} ${time};
 
-        const message = `您的預約表單\n\n設計師: ${stylist}\n姓名: ${name}\n電話: ${phone}\n服務項目: ${service}\n預約時間: ${finalTime}\n備註:\n${remarks}`;
+        const message = 這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks};
 
         liff.sendMessages([{ type: "text", text: message }])
-            .then(() => liff.closeWindow())
+            .then(() => {
+                liff.closeWindow();
+            })
             .catch(err => console.error("發送訊息錯誤", err));
     }
 </script>
