@@ -57,7 +57,7 @@
 
     <label>設 計 師</label>
     <select id="stylist">
-        <option value=""></option>
+        <option value="1" selected>請選擇設計師</option>
         <option value="Michelle">Michelle</option>
         <option value="Mia">Mia</option>
         <option value="不指定設計師">不指定設計師</option>
@@ -88,6 +88,7 @@
 <script>
     // 設計師的休假日期
     const holidays = {
+        "1":[],
         "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-12", "2025-02-19", "2025-02-26"],
         "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-21", "2025-02-26"],
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
