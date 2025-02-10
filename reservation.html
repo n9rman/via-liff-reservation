@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>via hair salon</title>
+    <title>via hair salon 預約</title>
     
     <!-- 引入 flatpickr 插件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -57,87 +57,52 @@
 
     <label>設 計 師</label>
     <select id="stylist">
-        <option value="1" selected>請選擇設計師</option>
+        <option value="" selected>請選擇設計師</option>
         <option value="Michelle">Michelle</option>
         <option value="Mia">Mia</option>
         <option value="不指定設計師">不指定設計師</option>
     </select>
 
     <label>您 的 姓 名</label>
-    <input type="text" id="name">
+    <input type="text" id="name" placeholder="請輸入您的名字">
 
     <label>您 的 電 話</label>
-    <input type="text" id="phone">
+    <input type="text" id="phone" placeholder="請輸入您的電話">
 
-    <label>服 務 項 目</label>
-    <input type="text" id="service">  
+    <label>服務 項 目</label>
+    <input type="text" id="service" placeholder="請輸入您的服務項目">
 
-    <label>預 約 日 期</label>
+    <label>選擇預約日期</label>
     <input type="text" id="date" placeholder="請選擇日期">
 
-    <label>預 約 時 間</label>
-    <select id="time">
-        <option value="">請先選擇日期</option>
-    </select>
-
     <label>備 註</label>
-    <textarea id="remarks" rows="3"></textarea>
+    <textarea id="remarks" rows="3" placeholder="請輸入備註"></textarea>
 
-    <button onclick="submitReservation()">提交</button>
+    <button onclick="submitReservation()">確認送出</button>
 
 <script>
     // 設計師的休假日期
     const holidays = {
-        "1":[],
         "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-12", "2025-02-19", "2025-02-26"],
         "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-21", "2025-02-26"],
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
-    // 監聽設計師選擇，更新日期選擇器
-    document.getElementById("stylist").addEventListener("change", function(event) {
-        const selectedStylist = event.target.value;
-        const disabledDates = holidays[selectedStylist] || [];
-        initDatePicker(disabledDates);
-    });
-
-    // 初始化日期選擇器
-    function initDatePicker(disabledDates = []) {
+    // 初始化日期選擇器，顯示客製化月曆
+    function initDatePicker() {
         flatpickr("#date", {
             dateFormat: "Y-m-d",
-            disable: disabledDates,
+            minDate: "today",  // 設置起點為當天日期
+            disable: [],
+            locale: "zh", // 設定為中文
             onChange: function(selectedDates, dateStr) {
-                updateTimeOptions(dateStr);
+                console.log("選擇的日期是：" + dateStr);
             }
         });
     }
 
-    // 根據日期生成 30 分鐘間隔的時間選項
-    function updateTimeOptions(date) {
-        const timeSelect = document.getElementById("time");
-        timeSelect.innerHTML = ""; // 清空選項
-
-        if (!date) {
-            timeSelect.innerHTML = "<option value=''>請先選擇日期</option>";
-            return;
-        }
-
-        // 設置時間範圍 09:00 - 17:00，每 30 分鐘為一個單位
-        const startHour = 9;
-        const endHour = 17;
-        for (let hour = startHour; hour < endHour; hour++) {
-            for (let minute of [0, 30]) {
-                const timeValue = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-                const option = document.createElement("option");
-                option.value = timeValue;
-                option.textContent = timeValue;
-                timeSelect.appendChild(option);
-            }
-        }
-    }
-
-    // 預設初始化
-    initDatePicker([]);
+    // 預設初始化日期選擇器
+    initDatePicker();
 
     // 提交預約
     async function submitReservation() {
@@ -153,17 +118,14 @@
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
         const date = document.getElementById("date").value;
-        const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
-        if (!stylist || !name || !phone || !service || !date || !time) {
+        if (!stylist || !name || !phone || !service || !date) {
             alert("有欄位未填寫");
             return;
         }
 
-        const finalTime = `${date} ${time}`;
-
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
