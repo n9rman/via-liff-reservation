@@ -76,6 +76,11 @@
             background-color: #333;
             color: white;
         }
+        .disabled {
+            pointer-events: none;
+            background-color: #f0f0f0;
+            color: #ccc;
+        }
         .time-select-container {
             display: flex;
             justify-content: space-between;
@@ -119,7 +124,6 @@
     <label for="service">服務項目</label>
     <input type="text" id="service" placeholder="">
 
-
     <label for="remarks">備註</label>
     <textarea id="remarks" rows="2" placeholder=""></textarea>
 
@@ -133,7 +137,8 @@
         const year = now.getFullYear();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
-        
+        const today = new Date();  // 當天的日期
+
         // 清空月曆
         $('#calendar').empty();
 
@@ -148,9 +153,13 @@
             $('#calendar').append('<div></div>');
         }
 
-        // 填充日期
+        // 填充日期並設置禁用過去的日期
         for (let day = 1; day <= daysInMonth; day++) {
-            $('#calendar').append(`<div class="calendar-day" data-day="${day}">${day}</div>`);
+            const date = new Date(year, month, day);
+            const isPastDate = date < today; // 判斷是否是過去的日期
+            const className = isPastDate ? 'disabled' : 'calendar-day';  // 給過去的日期加上禁用樣式
+
+            $('#calendar').append(`<div class="${className}" data-day="${day}">${day}</div>`);
         }
 
         // 點擊日期選擇
@@ -160,6 +169,13 @@
             const selectedDay = $(this).data("day");
             const selectedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}`;
             $("#selectedDate").val(selectedDate);
+        });
+
+        // 禁用過去的日期樣式
+        $(".disabled").css({
+            "pointer-events": "none",
+            "background-color": "#f0f0f0",
+            "color": "#ccc"
         });
     }
 
