@@ -50,6 +50,11 @@
         }
         button:hover { background-color: #555; }
         .image-container { text-align: center; margin-top: 20px; }
+
+        /* 隱藏原生日期選擇 UI */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -109,6 +114,11 @@
         }
     });
 
+    // **阻止原生日期選擇器彈出**
+    document.getElementById("date").addEventListener("focus", function(event) {
+        event.preventDefault();
+    });
+
     // 初始化日期選擇器，最早日期為今天
     function initDatePicker(disabledDates = []) {
         flatpickr("#date", {
@@ -119,30 +129,6 @@
                 updateTimeOptions(dateStr);
             }
         });
-    }
-
-    // 根據日期生成 30 分鐘間隔的時間選項
-    function updateTimeOptions(date) {
-        const timeSelect = document.getElementById("time");
-        timeSelect.innerHTML = ""; // 清空選項
-
-        if (!date) {
-            timeSelect.innerHTML = "<option value=''>請先選擇日期</option>";
-            return;
-        }
-
-        // 設置時間範圍 09:00 - 17:00，每 30 分鐘為一個單位
-        const startHour = 9;
-        const endHour = 17;
-        for (let hour = startHour; hour < endHour; hour++) {
-            for (let minute of [0, 30]) {
-                const timeValue = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-                const option = document.createElement("option");
-                option.value = timeValue;
-                option.textContent = timeValue;
-                timeSelect.appendChild(option);
-            }
-        }
     }
 
     // 預設初始化
