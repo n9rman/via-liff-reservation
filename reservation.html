@@ -340,12 +340,33 @@
         }
     };
 
-    // 發送 Flex Message
-    liff.sendMessages([flexMessage])
-        .then(() => {
-            liff.closeWindow();
-        })
-        .catch(err => console.error("發送 Flex Message 錯誤", err));
+ const reservationData = {
+        stylist,
+        name,
+        phone,
+        service,
+        date,
+        time,
+        remarks
+    };
+
+    // 送出 POST 請求到後端
+    await fetch('https://你的後端URL/submit-reservation', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reservationData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('後端回應:', data);
+        alert('預約已送出');
+    })
+    .catch(error => {
+        console.error('錯誤:', error);
+        alert('預約送出失敗');
+    });
 }
 </script>
 
