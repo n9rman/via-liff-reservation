@@ -48,7 +48,7 @@
                 $(this).addClass("selected");
                 const selectedDay = $(this).data("day");
                 const selectedDate = $(this).data("date");
-                $("#selectedDate").val(selectedDate);
+                $("#selectedDate").val(selectedDate); // 更新選中的日期
             }
         });
 
@@ -105,8 +105,8 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const date = document.getElementById("selectedDate").value; // 預約日期
-        const time = document.getElementById("time").value; // 預約時間
+        const date = document.getElementById("selectedDate").value; // 這是預約日期，確保格式為 YYYY-MM-DD
+        const time = document.getElementById("time").value; // 這是選擇的時間，格式為 12:00 PM 或 12:30 PM
         const remarks = document.getElementById("remarks").value;
 
         if (!stylist || !name || !phone || !service || !date || !time) {
@@ -114,7 +114,10 @@
             return;
         }
 
-        const finalTime = `${date} ${time}`; // 確保時間格式正確
+        // 把時間格式轉換為24小時制
+        const time24 = convertTo24HourFormat(time);
+
+        const finalTime = `${date} ${time24}`; // 日期 + 時間
 
         const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
@@ -123,5 +126,20 @@
                 liff.closeWindow();
             })
             .catch(err => console.error("發送訊息錯誤", err));
+    }
+
+    // 將 AM/PM 時間轉換為 24 小時制格式
+    function convertTo24HourFormat(time) {
+        const [timePart, ampm] = time.split(" ");
+        let [hour, minute] = timePart.split(":").map(num => parseInt(num, 10));
+
+        if (ampm === "PM" && hour !== 12) {
+            hour += 12;
+        }
+        if (ampm === "AM" && hour === 12) {
+            hour = 0;
+        }
+
+        return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
     }
 </script>
