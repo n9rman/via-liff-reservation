@@ -201,9 +201,10 @@
         timeSelect.innerHTML = "";
 
         for (let hour = startTime; hour <= endTime; hour++) {
-            const ampm = hour < 12 ? 'AM' : 'PM';
-            const hour12 = hour % 12 || 12; // 將24小時格式轉換為12小時格式
-            const times = [`${hour12}:00 ${ampm}`, `${hour12}:30 ${ampm}`];
+            const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
+            const times = [
+                            `${hour24}:00`,  // 以24小時制顯示
+                            `${hour24}:30`   // 以24小時制顯示
             
             times.forEach(time => {
                 const option = document.createElement("option");
