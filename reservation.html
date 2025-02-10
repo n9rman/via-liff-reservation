@@ -75,10 +75,10 @@
         .calendar div:hover {
             background-color: #eee;
         }
-        .selected {
-            background-color: red;  /* 改為紅色 */
-            color: white;
-        }
+.selected {
+    background-color: red !important;  /* 加上 !important */
+    color: white !important;           /* 也加上 !important */
+}
         .disabled {
             pointer-events: none;
             background-color: #f0f0f0;
@@ -168,7 +168,7 @@
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
             const isPastDate = date < today; // 判斷是否是過去的日期
-            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`; 
+            const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isHoliday = holidays[selectedStylist] && holidays[selectedStylist].includes(formattedDate);
             const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day'; // 給過去的日期和休假日期加上禁用樣式
 
