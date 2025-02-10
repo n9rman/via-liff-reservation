@@ -132,8 +132,8 @@
 <script>
     // 設計師的休假日期
     const holidays = {
-        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-12", "2025-02-19", "2025-02-26"],
-        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-21", "2025-02-26"],
+        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
+        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
         "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
     };
 
@@ -223,6 +223,7 @@
     generateCalendar();
     generateTimeOptions();
 
+   
     // 提交預約
     async function submitReservation() {
         await liff.init({ liffId: "2006867121-OlgLV60n" });
@@ -236,7 +237,7 @@
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
         const service = document.getElementById("service").value;
-        const date = document.getElementById("selectedDate").value;
+        const date = document.getElementById("date").value;
         const time = document.getElementById("time").value;
         const remarks = document.getElementById("remarks").value;
 
@@ -245,7 +246,9 @@
             return;
         }
 
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date} ${time}\n\n備註：\n${remarks}`;
+        const finalTime = `${date} ${time}`;
+
+        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
