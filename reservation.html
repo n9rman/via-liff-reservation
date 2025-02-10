@@ -97,30 +97,31 @@
         <option value="不指定設計師">不指定設計師</option>
     </select>
 
-    <label for="name">您的姓名</label>
-    <input type="text" id="name" placeholder="請輸入您的名字">
-
-    <label for="phone">您的電話</label>
-    <input type="text" id="phone" placeholder="請輸入您的電話">
-
-    <label for="service">服務項目</label>
-    <input type="text" id="service" placeholder="請輸入服務項目">
-
-    <label for="date">選擇預約日期</label>
+    <label for="date">預約日期</label>
     <div class="calendar-container">
         <div id="calendar" class="calendar"></div>
         <input type="hidden" id="selectedDate">
     </div>
-
-    <label for="time">選擇預約時間</label>
+    
+    <label for="time">預約時間</label>
     <div class="time-select-container">
         <select id="time" class="time-select">
             <!-- 時間選擇選項將在 JavaScript 生成 -->
         </select>
     </div>
 
+    <label for="name">您的姓名</label>
+    <input type="text" id="name" placeholder="">
+
+    <label for="phone">您的電話</label>
+    <input type="text" id="phone" placeholder="">
+
+    <label for="service">服務項目</label>
+    <input type="text" id="service" placeholder="">
+
+
     <label for="remarks">備註</label>
-    <textarea id="remarks" rows="3" placeholder="請輸入備註"></textarea>
+    <textarea id="remarks" rows="2" placeholder=""></textarea>
 
     <button onclick="submitReservation()">確認送出</button>
 
