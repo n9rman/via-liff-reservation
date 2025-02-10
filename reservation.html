@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>via hair salon 預約</title>
+    <title>via 預約表單</title>
     
     <!-- 引入 flatpickr 插件 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -22,7 +22,10 @@
             padding: 20px;
             background-color: #f9f9f9;
         }
-        h2 { text-align: center; color: #333; }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
         label {
             display: block;
             margin-top: 10px;
@@ -48,14 +51,19 @@
             cursor: pointer;
             margin-top: 15px;
         }
-        button:hover { background-color: #555; }
-        .image-container { text-align: center; margin-top: 20px; }
+        button:hover {
+            background-color: #555;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <h2>via 預 約 表 單</h2>
+    <h2>via 預約表單</h2>
 
-    <label>設 計 師</label>
+    <label for="stylist">設計師</label>
     <select id="stylist">
         <option value="" selected>請選擇設計師</option>
         <option value="Michelle">Michelle</option>
@@ -63,38 +71,31 @@
         <option value="不指定設計師">不指定設計師</option>
     </select>
 
-    <label>您 的 姓 名</label>
+    <label for="name">您的姓名</label>
     <input type="text" id="name" placeholder="請輸入您的名字">
 
-    <label>您 的 電 話</label>
+    <label for="phone">您的電話</label>
     <input type="text" id="phone" placeholder="請輸入您的電話">
 
-    <label>服務 項 目</label>
-    <input type="text" id="service" placeholder="請輸入您的服務項目">
+    <label for="service">服務項目</label>
+    <input type="text" id="service" placeholder="請輸入服務項目">
 
-    <label>選擇預約日期</label>
+    <label for="date">選擇預約日期</label>
     <input type="text" id="date" placeholder="請選擇日期">
 
-    <label>備 註</label>
+    <label for="remarks">備註</label>
     <textarea id="remarks" rows="3" placeholder="請輸入備註"></textarea>
 
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
-    // 設計師的休假日期
-    const holidays = {
-        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-12", "2025-02-19", "2025-02-26"],
-        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-21", "2025-02-26"],
-        "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
-    };
-
-    // 初始化日期選擇器，顯示客製化月曆
+    // 初始化 flatpickr 月曆
     function initDatePicker() {
         flatpickr("#date", {
             dateFormat: "Y-m-d",
             minDate: "today",  // 設置起點為當天日期
-            disable: [],
             locale: "zh", // 設定為中文
+            disable: [], // 如果有特殊日期要禁用，可以在這裡添加
             onChange: function(selectedDates, dateStr) {
                 console.log("選擇的日期是：" + dateStr);
             }
@@ -106,13 +107,16 @@
 
     // 提交預約
     async function submitReservation() {
+        // 初始化 LIFF
         await liff.init({ liffId: "2006867121-OlgLV60n" });
 
+        // 檢查是否已經登入
         if (!liff.isLoggedIn()) {
             liff.login();
             return; // 如果沒登入，則停止後續操作
         }
 
+        // 獲取表單資料
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
@@ -120,13 +124,16 @@
         const date = document.getElementById("date").value;
         const remarks = document.getElementById("remarks").value;
 
+        // 檢查表單是否已完整填寫
         if (!stylist || !name || !phone || !service || !date) {
             alert("有欄位未填寫");
             return;
         }
 
+        // 組織訊息
         const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${date}\n\n備註：\n${remarks}`;
 
+        // 發送訊息至 LINE@
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
                 liff.closeWindow();
