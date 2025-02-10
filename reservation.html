@@ -139,6 +139,7 @@
 
     // 初始化月曆
     function generateCalendar() {
+        console.log("生成月曆...");
         const now = new Date();
         const month = now.getMonth();
         const year = now.getFullYear();
@@ -179,6 +180,7 @@
                 $(this).addClass("selected");
                 const selectedDay = $(this).data("day");
                 const selectedDate = $(this).data("date");
+                console.log("選擇的日期:", selectedDate);
                 $("#selectedDate").val(selectedDate);
             }
         });
@@ -193,6 +195,7 @@
 
     // 生成時間選擇方塊
     function generateTimeOptions() {
+        console.log("生成時間選項...");
         const startTime = 9; // 9:00
         const endTime = 17; // 17:30
         const timeSelect = document.getElementById("time");
@@ -200,26 +203,25 @@
         // 清空時間選項
         timeSelect.innerHTML = "";
 
-for (let hour = startTime; hour <= endTime; hour++) {
-    const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
-    const times = [
-        `${hour24}:00`,  // 以24小時制顯示
-        `${hour24}:30`   // 以24小時制顯示
-    ];
+        for (let hour = startTime; hour <= endTime; hour++) {
+            const hour24 = String(hour).padStart(2, '0'); // 確保時間格式是24小時，並補足前導零
+            const times = [
+                `${hour24}:00`,  // 以24小時制顯示
+                `${hour24}:30`   // 以24小時制顯示
+            ];
             
-                
-    times.forEach(time => {
-        const option = document.createElement("option");
-        option.value = time;
-        option.text = time;
-        timeSelect.appendChild(option);
-    });
-}
-        
+            times.forEach(time => {
+                const option = document.createElement("option");
+                option.value = time;
+                option.text = time;
+                timeSelect.appendChild(option);
+            });
+        }
     }
 
     // 設置設計師選擇事件，更新月曆
     $('#stylist').change(function() {
+        console.log("設計師選擇改變，重新生成月曆...");
         generateCalendar();
     });
 
@@ -229,35 +231,45 @@ for (let hour = startTime; hour <= endTime; hour++) {
 
     // 提交預約
     async function submitReservation() {
-        await liff.init({ liffId: "2006867121-OlgLV60n" });
+        console.log("提交預約表單...");
+        try {
+            await liff.init({ liffId: "2006867121-OlgLV60n" });
+            console.log("LIFF 初始化成功");
 
-        if (!liff.isLoggedIn()) {
-            liff.login();
-            return; // 如果沒登入，則停止後續操作
+            if (!liff.isLoggedIn()) {
+                console.log("未登入，進行登入...");
+                liff.login();
+                return; // 如果沒登入，則停止後續操作
+            }
+
+            const stylist = document.getElementById("stylist").value;
+            const name = document.getElementById("name").value;
+            const phone = document.getElementById("phone").value;
+            const service = document.getElementById("service").value;
+            const date = document.getElementById("selectedDate").value;
+            const time = document.getElementById("time").value;
+            const remarks = document.getElementById("remarks").value;
+
+            console.log("表單資料:", {stylist, name, phone, service, date, time, remarks});
+
+            if (!stylist || !name || !phone || !service || !date || !time) {
+                alert("有欄位未填寫");
+                return;
+            }
+
+            const finalTime = `${date} ${time}`;
+            const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+
+            console.log("發送的訊息:", message);
+
+            await liff.sendMessages([{ type: "text", text: message }]);
+            console.log("訊息發送成功");
+
+            liff.closeWindow();
+        } catch (error) {
+            console.error("錯誤：", error);
+            alert("提交時發生錯誤，請稍後再試");
         }
-
-        const stylist = document.getElementById("stylist").value;
-        const name = document.getElementById("name").value;
-        const phone = document.getElementById("phone").value;
-        const service = document.getElementById("service").value;
-        const date = document.getElementById("selectedDate").value; // 修改這裡
-        const time = document.getElementById("time").value;
-        const remarks = document.getElementById("remarks").value;
-
-        if (!stylist || !name || !phone || !service || !date || !time) {
-            alert("有欄位未填寫");
-            return;
-        }
-
-        const finalTime = `${date} ${time}`;
-
-        const message = `這是您的預約表單\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
-
-        liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {
-                liff.closeWindow();
-            })
-            .catch(err => console.error("發送訊息錯誤", err));
     }
 </script>
 
