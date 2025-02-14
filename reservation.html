@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>𝑣𝑖𝑎 ℎ𝑎𝑖𝑟 𝑠𝑎𝑙𝑜𝑛</title>
+    <title>𝗳𝗲𝗰 𝗘𝗡𝗢𝗠 𝗔𝗜𝗔𝗡</title>
 
+    <!-- 測試不同的 Supabase CDN 來源 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.18.0/dist/supabase.min.js"></script>
-
-
+    <script src="https://unpkg.com/@supabase/supabase-js@2.18.0/dist/supabase.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.18.0/supabase.min.js"></script>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
@@ -55,7 +57,7 @@
     // 初始化 Supabase
     function initializeSupabase() {
         const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
+        const supabaseKey = 'YOUR_SUPABASE_KEY';
         
         // 確保 Supabase SDK 已經加載
         if (typeof supabase === 'undefined') {
@@ -66,11 +68,16 @@
         try {
             // 初始化 Supabase 客戶端
             supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-            console.log("Supabase 客戶端初始化成功");
+            console.log("Supabase 客戶端初始化成功", supabaseClient);
         } catch (error) {
             console.error("初始化 Supabase 客戶端失敗:", error);
         }
     }
+
+    // 測試是否載入成功
+    setTimeout(() => {
+        console.log("supabase 是否可用:", typeof supabase !== "undefined" ? "✅ 可用" : "❌ 無法載入");
+    }, 3000);
 
     // 預約送出函數
     async function submitReservation() {
@@ -87,8 +94,6 @@
             return;
         }
 
-        const finalTime = `${date} ${time}`;
-
         // 使用 Supabase API 來將資料寫入資料庫
         const { data, error } = await supabaseClient
             .from('RHH')
@@ -101,7 +106,6 @@
                 appointment_time: time,
                 stylist: stylist
             }]);
-
 
         if (error) {
             console.error("插入資料錯誤:", error);
