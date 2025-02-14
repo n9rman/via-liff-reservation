@@ -6,7 +6,6 @@
     <title>𝑣𝑖𝑎 ℎ𝑎𝑖𝑟 𝑠𝑎𝑙𝑜𝑛</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2.18.0/dist/supabase.min.js"></script>    
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         body { font-family: 'Noto Serif TC', serif; max-width: 400px; margin: auto; padding: 20px; background-color: #f9f9f9; }
         label { display: block; margin-top: 10px; font-weight: bold; }
@@ -41,7 +40,6 @@
     <textarea id="remarks" rows="2" placeholder=""></textarea>
     <button onclick="submitReservation()">確認送出</button>
 
-
 <script>
     let supabaseClient;
 
@@ -63,23 +61,8 @@
         }
     }
 
-    // 初始化 LIFF 並確保 Supabase 初始化完成
-    async function initializeLIFF() {
-        try {
-            await liff.init({ liffId: "2006867121-OlgLV60n" });  // 初始化 LIFF
-            await initializeSupabase();  // 確保 Supabase 初始化完成
-        } catch (error) {
-            console.error("LIFF 初始化錯誤:", error);
-        }
-    }
-
     // 預約送出函數
     async function submitReservation() {
-        if (!liff.isLoggedIn()) {
-            liff.login();
-            return;
-        }
-
         const stylist = document.getElementById("stylist").value;
         const name = document.getElementById("name").value;
         const phone = document.getElementById("phone").value;
@@ -115,22 +98,13 @@
             return;
         }
 
-        // 發送訊息到 LINE
-        liff.sendMessages([{ type: "text", text: message }])
-            .then(() => {
-                liff.closeWindow();
-            })
-            .catch(err => console.error("發送訊息錯誤", err));
+        alert("預約資料已成功送出");
     }
 
-document.addEventListener("DOMContentLoaded", function() {
-    // 等待所有外部腳本載入後執行
-    if (typeof supabase === 'undefined') {
-        console.error("Supabase SDK 尚未加載");
-        return;
-    }
-    initializeLIFF();  // 呼叫 LIFF 初始化
-});
+    // 頁面載入時初始化 Supabase
+    document.addEventListener("DOMContentLoaded", function() {
+        initializeSupabase();  // 初始化 Supabase
+    });
 </script>
 
 </body>
