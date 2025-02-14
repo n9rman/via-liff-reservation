@@ -45,15 +45,11 @@
 
     // 初始化 Supabase
     function initializeSupabase() {
-        if (typeof supabase === 'undefined') {
-            console.error("Supabase SDK尚未加載");
-            return;
-        }
-        
         const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
-        
+
         try {
+            // 嘗試初始化 Supabase 客戶端
             supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             console.log("Supabase 客戶端初始化成功");
         } catch (error) {
@@ -77,8 +73,6 @@
         }
 
         const finalTime = `${date} ${time}`;
-
-        const message = `[這是您的預約表單]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
         // 使用 Supabase API 來將資料寫入資料庫
         const { data, error } = await supabaseClient
