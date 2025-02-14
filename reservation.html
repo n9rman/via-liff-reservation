@@ -91,13 +91,23 @@
         initializeSupabase();
     }
 
-// 初始化 Supabase 客戶端
-function initializeSupabase() {
+async function initializeSupabase() {
+    // 確認supabase SDK正確載入
+    if (typeof supabase === 'undefined') {
+        console.error("Supabase SDK尚未加載");
+        return;
+    }
+
     const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
-    supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);  // 使用正確的初始化方法
+    
+    try {
+        supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);  // 初始化
+        console.log("Supabase 客戶端初始化成功");
+    } catch (error) {
+        console.error("初始化 Supabase 客戶端失敗:", error);
+    }
 }
-
     // 預約送出函數
     async function submitReservation() {
         if (!liff.isLoggedIn()) {
