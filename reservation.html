@@ -123,10 +123,14 @@
             .catch(err => console.error("發送訊息錯誤", err));
     }
 
-    // 確保 LIFF 初始化後執行
-    document.addEventListener("DOMContentLoaded", async function() {
-        await initializeLIFF();  // 確保 LIFF 和 Supabase 初始化後執行
-    });
+document.addEventListener("DOMContentLoaded", function() {
+    // 等待所有外部腳本載入後執行
+    if (typeof supabase === 'undefined') {
+        console.error("Supabase SDK 尚未加載");
+        return;
+    }
+    initializeLIFF();  // 呼叫 LIFF 初始化
+});
 </script>
 
 </body>
