@@ -41,27 +41,27 @@
     <textarea id="remarks" rows="2" placeholder=""></textarea>
     <button onclick="submitReservation()">確認送出</button>
 
+
 <script>
     let supabaseClient;
 
     // 初始化 Supabase
-function initializeSupabase() {
-    if (typeof supabase === 'undefined') {
-        console.error("Supabase SDK尚未加載");
-        return;
+    function initializeSupabase() {
+        if (typeof supabase === 'undefined') {
+            console.error("Supabase SDK尚未加載");
+            return;
+        }
+        
+        const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
+        
+        try {
+            supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+            console.log("Supabase 客戶端初始化成功");
+        } catch (error) {
+            console.error("初始化 Supabase 客戶端失敗:", error);
+        }
     }
-    
-    const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
-    
-    try {
-        supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-        console.log("Supabase 客戶端初始化成功");
-    } catch (error) {
-        console.error("初始化 Supabase 客戶端失敗:", error);
-    }
-}
-
 
     // 初始化 LIFF 並確保 Supabase 初始化完成
     async function initializeLIFF() {
@@ -124,9 +124,9 @@ function initializeSupabase() {
     }
 
     // 確保 LIFF 初始化後執行
-    window.onload = async function() {
+    document.addEventListener("DOMContentLoaded", async function() {
         await initializeLIFF();  // 確保 LIFF 和 Supabase 初始化後執行
-    };
+    });
 </script>
 
 </body>
