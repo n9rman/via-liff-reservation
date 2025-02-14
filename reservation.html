@@ -110,16 +110,22 @@ async function initializeSupabase() {
     }
 }
 
-    const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
-    
-    try {
-        supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);  // 初始化
-        console.log("Supabase 客戶端初始化成功");
-    } catch (error) {
-        console.error("初始化 Supabase 客戶端失敗:", error);
+async function waitForSupabase() {
+    while (typeof supabase === 'undefined') {
+        console.log('Supabase SDK 還沒載入...');
+        await new Promise(resolve => setTimeout(resolve, 100));
     }
+    initializeSupabase();
 }
+
+async function initializeLIFF() {
+    await liff.init({ liffId: "2006867121-OlgLV60n" });
+    await waitForSupabase();  // 等待 Supabase 加載完畢
+}
+
+    
+
+    
     // 預約送出函數
     async function submitReservation() {
         if (!liff.isLoggedIn()) {
