@@ -75,14 +75,9 @@
         .calendar div:hover {
             background-color: #eee;
         }
-.selected {
-    background-color: red !important;  /* 加上 !important */
-    color: white !important;           /* 也加上 !important */
-}
-        .disabled {
-            pointer-events: none;
-            background-color: #f0f0f0;
-            color: #ccc;
+        .selected {
+            background-color: red !important;
+            color: white !important;
         }
         .time-select-container {
             display: flex;
@@ -133,13 +128,6 @@
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
-    // 設計師的休假日期
-    const holidays = {
-        "Michelle": ["2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09","2025-02-12", "2025-02-19", "2025-02-20", "2025-02-26"],
-        "Mia": ["2025-02-01", "2025-02-02", "2025-02-13", "2025-02-14", "2025-02-15", "2025-02-21", "2025-02-26", "2025-02-27"],
-        "不指定設計師": ["2025-02-01", "2025-02-02", "2025-02-26"]
-    };
-
     // 初始化月曆
     function generateCalendar() {
         const now = new Date();
@@ -147,8 +135,6 @@
         const year = now.getFullYear();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
         const firstDayOfMonth = new Date(year, month, 1).getDay();
-        const today = new Date();  // 當天的日期
-        const selectedStylist = document.getElementById("stylist").value;
 
         // 清空月曆
         $('#calendar').empty();
@@ -164,33 +150,19 @@
             $('#calendar').append('<div></div>');
         }
 
-        // 填充日期並設置禁用過去的日期和休假日期
+        // 填充日期
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
-            const isPastDate = date < today; // 判斷是否是過去的日期
             const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const isHoliday = holidays[selectedStylist] && holidays[selectedStylist].includes(formattedDate);
-            const className = isPastDate || isHoliday ? 'disabled' : 'calendar-day'; // 給過去的日期和休假日期加上禁用樣式
-
-            $('#calendar').append(`<div class="${className}" data-day="${day}" data-date="${formattedDate}">${day}</div>`);
+            $('#calendar').append(`<div class="calendar-day" data-day="${day}" data-date="${formattedDate}">${day}</div>`);
         }
 
         // 點擊日期選擇
         $(".calendar-day").on('click', function() {
-            if (!$(this).hasClass("disabled")) {
-                $(".calendar-day").removeClass("selected");
-                $(this).addClass("selected");
-                const selectedDay = $(this).data("day");
-                const selectedDate = $(this).data("date");
-                $("#selectedDate").val(selectedDate);
-            }
-        });
-
-        // 禁用過去的日期和休假日期樣式
-        $(".disabled").css({
-            "pointer-events": "none",
-            "background-color": "#f0f0f0",
-            "color": "#ccc"
+            $(".calendar-day").removeClass("selected");
+            $(this).addClass("selected");
+            const selectedDate = $(this).data("date");
+            $("#selectedDate").val(selectedDate);
         });
     }
 
@@ -250,14 +222,9 @@
             return;
         }
 
-        // 格式化日期為 mm/dd 的格式
-        const formattedDate = new Date(date);
-        const month = String(formattedDate.getMonth() + 1).padStart(2, '0');  // 获取月份并补零
-        const day = String(formattedDate.getDate()).padStart(2, '0');  // 获取日期并补零
-        const finalFormattedDate = `${month}/${day}`;
-
-        // 最終預約時間格式
-        const finalTime = `${finalFormattedDate} ${time}`;
+        // 使用原始日期格式（不進行格式化）
+        const finalDate = date;
+        const finalTime = `${finalDate} ${time}`;
 
         const message = `[這是您的預約表單]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
