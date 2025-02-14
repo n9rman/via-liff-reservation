@@ -7,125 +7,65 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2.18.0/dist/supabase.min.js"></script>    
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-
-
-
     <style>
-        body {
-            font-family: 'Noto Serif TC', serif;
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            display: block;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            font-size: 18px;
-            color: white;
-            background-color: #333;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        button:hover {
-            background-color: #555;
-        }
+        body { font-family: 'Noto Serif TC', serif; max-width: 400px; margin: auto; padding: 20px; background-color: #f9f9f9; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; font-size: 18px; color: white; background-color: #333; border: none; border-radius: 5px; cursor: pointer; margin-top: 15px; }
+        button:hover { background-color: #555; }
     </style>
 </head>
 <body>
-    <h2>v i a  預 約 表 單</h2>
-
+    <h2>v i a 預 約 表 單</h2>
     <label for="stylist">* 設 計 師</label>
     <select id="stylist">
         <option value="" selected>請選擇設計師</option>
         <option value="Michelle">Michelle</option>
         <option value="Mia">Mia</option>
     </select>
-
     <label for="date">* 預 約 日 期</label>
     <input type="date" id="date">
-
     <label for="time">* 預 約 時 間</label>
     <select id="time">
         <option value="09:00">09:00</option>
         <option value="09:30">09:30</option>
         <option value="10:00">10:00</option>
     </select>
-
     <label for="name">* 您 的 姓 名</label>
     <input type="text" id="name" placeholder="">
-
     <label for="phone">* 您 的 電 話</label>
     <input type="text" id="phone" placeholder="">
-
     <label for="service">* 服 務 項 目</label>
     <input type="text" id="service" placeholder="">
-
     <label for="remarks">備 註</label>
     <textarea id="remarks" rows="2" placeholder=""></textarea>
-
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
     let supabaseClient;
 
-// 初始化 LIFF
-async function initializeLIFF() {
-    await liff.init({ liffId: "2006867121-OlgLV60n" });
-    
-    // 確保 LIFF 初始化成功，接著初始化 Supabase
-    if (typeof supabase === 'undefined') {
-        console.error("Supabase SDK尚未加載");
-        return;
+    // 初始化 Supabase
+    async function initializeSupabase() {
+        const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
+        try {
+            supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);  // 初始化
+            console.log("Supabase 客戶端初始化成功");
+        } catch (error) {
+            console.error("初始化 Supabase 客戶端失敗:", error);
+        }
     }
-    
-    initializeSupabase();  // 確保 Supabase 初始化
-}
 
-async function initializeSupabase() {
-    const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
-    
-    try {
-        supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);  // 初始化
-        console.log("Supabase 客戶端初始化成功");
-    } catch (error) {
-        console.error("初始化 Supabase 客戶端失敗:", error);
+    // 初始化 LIFF 並確保 Supabase 初始化完成
+    async function initializeLIFF() {
+        try {
+            await liff.init({ liffId: "2006867121-OlgLV60n" });  // 初始化 LIFF
+            await initializeSupabase();  // 確保 Supabase 初始化完成
+        } catch (error) {
+            console.error("LIFF 初始化錯誤:", error);
+        }
     }
-}
 
-async function waitForSupabase() {
-    while (typeof supabase === 'undefined') {
-        console.log('Supabase SDK 還沒載入...');
-        await new Promise(resolve => setTimeout(resolve, 100));
-    }
-    initializeSupabase();
-}
-
-async function initializeLIFF() {
-    await liff.init({ liffId: "2006867121-OlgLV60n" });
-    await waitForSupabase();  // 等待 Supabase 加載完畢
-}
-
-    
-
-    
     // 預約送出函數
     async function submitReservation() {
         if (!liff.isLoggedIn()) {
