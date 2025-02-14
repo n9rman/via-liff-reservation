@@ -44,13 +44,24 @@
 <script>
     let supabaseClient;
 
+    // 頁面載入時初始化 Supabase
+    document.addEventListener("DOMContentLoaded", function() {
+        initializeSupabase();  // 初始化 Supabase
+    });
+
     // 初始化 Supabase
     function initializeSupabase() {
         const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
+        
+        // 確保 Supabase SDK 已經加載
+        if (typeof supabase === 'undefined') {
+            console.error("Supabase SDK 尚未加載");
+            return;
+        }
 
         try {
-            // 嘗試初始化 Supabase 客戶端
+            // 初始化 Supabase 客戶端
             supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
             console.log("Supabase 客戶端初始化成功");
         } catch (error) {
@@ -88,6 +99,7 @@
                 stylist: stylist
             }]);
 
+
         if (error) {
             console.error("插入資料錯誤:", error);
             return;
@@ -95,11 +107,6 @@
 
         alert("預約資料已成功送出");
     }
-
-    // 頁面載入時初始化 Supabase
-    document.addEventListener("DOMContentLoaded", function() {
-        initializeSupabase();  // 初始化 Supabase
-    });
 </script>
 
 </body>
