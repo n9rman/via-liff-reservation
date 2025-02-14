@@ -8,44 +8,10 @@
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.19.0/dist/supabase.js"></script>
     <style>
-        body {
-            font-family: 'Noto Serif TC', serif;
-            max-width: 400px;
-            margin: auto;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        label {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            font-size: 16px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            display: block;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            font-size: 18px;
-            color: white;
-            background-color: #333;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        button:hover {
-            background-color: #555;
-        }
+        /* Your CSS styles */
     </style>
 </head>
-<body> 
+<body>
     <h2>v i a  預 約 表 單</h2>
 
     <label for="stylist">* 設 計 師</label>
@@ -63,7 +29,6 @@
         <option value="09:00">09:00</option>
         <option value="09:30">09:30</option>
         <option value="10:00">10:00</option>
-        <!-- 其他時間選項 -->
     </select>
 
     <label for="name">* 您 的 姓 名</label>
@@ -81,67 +46,58 @@
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
+    // 初始化 Supabase 客戶端
     const supabase = supabase.createClient('https://obycigoxkvabsgavelri.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8');
 
     async function submitReservation() {
-        try {
-            // 初始化 LIFF
-            await liff.init({ liffId: "2006867121-OlgLV60n" });
+        await liff.init({ liffId: "2006867121-OlgLV60n" });
 
-            if (!liff.isLoggedIn()) {
-                liff.login();
-                return; // 如果沒登入，則停止後續操作
-            }
-
-            // 取得表單欄位的值
-            const stylist = document.getElementById("stylist").value;
-            const name = document.getElementById("name").value;
-            const phone = document.getElementById("phone").value;
-            const service = document.getElementById("service").value;
-            const date = document.getElementById("date").value;
-            const time = document.getElementById("time").value;
-            const remarks = document.getElementById("remarks").value;
-
-            // 檢查必填欄位是否已填寫
-            if (!stylist || !name || !phone || !service || !date || !time) {
-                alert("有欄位未填寫");
-                return;
-            }
-
-            const finalTime = `${date} ${time}`;
-
-            const message = `[這是您的預約表單]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
-
-            // 使用 Supabase API 來將資料寫入資料庫
-            const { data, error } = await supabase
-                .from('RHH')
-                .insert([
-                    {
-                        name: name,
-                        phone: phone,
-                        service: service,
-                        remarks: remarks,
-                        appointment_date: date,
-                        appointment_time: time,
-                        stylist: stylist
-                    }
-                ]);
-
-            if (error) {
-                console.error("插入資料錯誤:", error);
-                alert("資料儲存失敗，請稍後再試。");
-                return;
-            }
-
-            // 發送訊息到 LINE
-            await liff.sendMessages([{ type: "text", text: message }]);
-
-            // 成功後關閉 LIFF 視窗
-            liff.closeWindow();
-        } catch (err) {
-            console.error("發生錯誤:", err);
-            alert("發生錯誤，請稍後再試。");
+        if (!liff.isLoggedIn()) {
+            liff.login();
+            return;
         }
+
+        const stylist = document.getElementById("stylist").value;
+        const name = document.getElementById("name").value;
+        const phone = document.getElementById("phone").value;
+        const service = document.getElementById("service").value;
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
+        const remarks = document.getElementById("remarks").value;
+
+        if (!stylist || !name || !phone || !service || !date || !time) {
+            alert("有欄位未填寫");
+            return;
+        }
+
+        const finalTime = `${date} ${time}`;
+
+        const message = `[這是您的預約表單]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
+
+        // 使用 Supabase API 來將資料寫入資料庫
+        const { data, error } = await supabase
+            .from('RHH')
+            .insert([{
+                name: name,
+                phone: phone,
+                service: service,
+                remarks: remarks,
+                appointment_date: date,
+                appointment_time: time,
+                stylist: stylist
+            }]);
+
+        if (error) {
+            console.error("插入資料錯誤:", error);
+            return;
+        }
+
+        // 發送訊息到 LINE
+        liff.sendMessages([{ type: "text", text: message }])
+            .then(() => {
+                liff.closeWindow();
+            })
+            .catch(err => console.error("發送訊息錯誤", err));
     }
 </script>
 
