@@ -12,6 +12,9 @@
     <!-- 引入 LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
+    <!-- 引入 Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.19.0/dist/supabase.js"></script>
+
     <style>
         body {
             font-family: 'Noto Serif TC', serif;
@@ -128,6 +131,10 @@
     <button onclick="submitReservation()">確認送出</button>
 
 <script>
+    // 初始化 Supabase 客戶端
+    const supabase = supabase.createClient('https://obycigoxkvabsgavelri.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8');
+
+
     // 初始化月曆
     function generateCalendar() {
         const now = new Date();
@@ -144,6 +151,13 @@
         daysOfWeek.forEach(day => {
             $('#calendar').append(`<div style="text-align:center; font-weight:bold">${day}</div>`);
         });
+
+
+    // 設置設計師選擇事件，更新月曆
+    $('#stylist').change(function() {
+        generateCalendar();
+    });
+
 
         // 空白填充，確保日期排正確
         for (let i = 0; i < firstDayOfMonth; i++) {
@@ -228,6 +242,27 @@
 
         const message = `[這是您的預約表單]\n[待稍候會幫您確認]\n\n設計師    ：${stylist}\n您的姓名：${name}\n您的電話：${phone}\n服務項目：${service}\n預約時間：${finalTime}\n\n備註：\n${remarks}`;
 
+        // 使用 Supabase API 來將資料寫入資料庫
+        const { data, error } = await supabase
+            .from('reservations')
+            .insert([
+                {
+                    name: name,
+                    phone: phone,
+                    service: service,
+                    remarks: remarks,
+                    appointment_date: finalDate,  // 預約日期
+                    appointment_time: time,      // 預約時間
+                    stylist: stylist
+                }
+            ]);
+
+        if (error) {
+            console.error("插入資料錯誤:", error);
+            return;
+        }
+
+        
         liff.sendMessages([{ type: "text", text: message }])
             .then(() => {
                 liff.closeWindow();
