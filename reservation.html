@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>𝑣𝑖𝑎 ℎ𝑎𝑖𝑟 𝑠𝑎𝑙𝑜𝑛</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2.18.0/dist/supabase.min.js"></script>    
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2.18.0/dist/supabase.min.js"></script>
+
 
 
     <style>
@@ -84,19 +85,30 @@
 <script>
     let supabaseClient;
 
-    // 初始化 LIFF
-    async function initializeLIFF() {
-        await liff.init({ liffId: "2006867121-OlgLV60n" });
-        // 確保 LIFF 初始化成功，接著初始化 Supabase
-        initializeSupabase();
-    }
-
-async function initializeSupabase() {
-    // 確認supabase SDK正確載入
+// 初始化 LIFF
+async function initializeLIFF() {
+    await liff.init({ liffId: "2006867121-OlgLV60n" });
+    
+    // 確保 LIFF 初始化成功，接著初始化 Supabase
     if (typeof supabase === 'undefined') {
         console.error("Supabase SDK尚未加載");
         return;
     }
+    
+    initializeSupabase();  // 確保 Supabase 初始化
+}
+
+async function initializeSupabase() {
+    const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
+    
+    try {
+        supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);  // 初始化
+        console.log("Supabase 客戶端初始化成功");
+    } catch (error) {
+        console.error("初始化 Supabase 客戶端失敗:", error);
+    }
+}
 
     const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
