@@ -90,12 +90,12 @@
         initializeSupabase();
     }
 
-    // 初始化 Supabase 客戶端
-    function initializeSupabase() {
-        const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
-        supabase = supabase.createClient(supabaseUrl, supabaseKey);
-    }
+// 初始化 Supabase 客戶端
+function initializeSupabase() {
+    const supabaseUrl = 'https://obycigoxkvabsgavelri.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ieWNpZ294a3ZhYnNnYXZlbHJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk1MDYwNDgsImV4cCI6MjA1NTA4MjA0OH0.U-eKeuLUFZ3ZDvqqy5cFMFPPOmteWfjanA5XbNZ7Xu8';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);  // 這裡需要改成 `window.supabase.createClient`
+}
 
     // 預約送出函數
     async function submitReservation() {
